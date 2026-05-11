@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -10,7 +11,7 @@ use Illuminate\Support\Str;
 class CategoryController extends Controller
 {
     /**
-     * Display all categories
+     * GET /categories
      */
     public function index()
     {
@@ -18,14 +19,11 @@ class CategoryController extends Controller
             ->latest()
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'categories' => $categories
-        ]);
+        return CategoryResource::collection($categories);
     }
 
     /**
-     * Store new category
+     * POST /categories
      */
     public function store(Request $request)
     {
@@ -35,37 +33,29 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
-
             'slug' => Str::slug($request->name),
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Category created successfully',
-            'category' => $category
-        ], 201);
+        return new CategoryResource($category);
     }
 
     /**
-     * Show single category with articles
+     * GET /categories/{slug}
      */
     public function show(string $slug)
     {
         $category = Category::with([
-            'articles.user',
-            'articles.comments'
-        ])
-        ->where('slug', $slug)
-        ->firstOrFail();
+                'articles.user',
+                'articles.comments'
+            ])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        return response()->json([
-            'success' => true,
-            'category' => $category
-        ]);
+        return new CategoryResource($category);
     }
 
     /**
-     * Update category
+     * PUT /categories/{id}
      */
     public function update(Request $request, string $id)
     {
@@ -77,19 +67,14 @@ class CategoryController extends Controller
 
         $category->update([
             'name' => $request->name,
-
             'slug' => Str::slug($request->name),
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Category updated successfully',
-            'category' => $category
-        ]);
+        return new CategoryResource($category);
     }
 
     /**
-     * Delete category
+     * DELETE /categories/{id}
      */
     public function destroy(string $id)
     {
@@ -98,7 +83,6 @@ class CategoryController extends Controller
         $category->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Category deleted successfully'
         ]);
     }
