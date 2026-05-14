@@ -13,10 +13,10 @@ export const fetchArticles = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error fetching articles"
+        error.response?.data || "Error fetching articles",
       );
     }
-  }
+  },
 );
 
 const articleSlice = createSlice({
