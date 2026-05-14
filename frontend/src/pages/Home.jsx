@@ -7,9 +7,7 @@ import { fetchArticles } from "../features/articles/articleSlice";
 function Home() {
   const dispatch = useDispatch();
 
-  const { articles, loading, error } = useSelector(
-    (state) => state.articles
-  );
+  const { articles, loading, error } = useSelector((state) => state.articles);
 
   // FETCH ARTICLES
   useEffect(() => {
@@ -47,18 +45,15 @@ function Home() {
             <p>{article.excerpt}</p>
 
             <p>
-              <strong>Category:</strong>{" "}
-              {article.category?.name}
+              <strong>Category:</strong> {article.category?.name}
             </p>
 
             <p>
-              <strong>Author:</strong>{" "}
-              {article.author?.name}
+              <strong>Author:</strong> {article.author?.name}
             </p>
 
             <p>
-              <strong>Views:</strong>{" "}
-              {article.view_count}
+              <strong>Views:</strong> {article.view_count}
             </p>
           </div>
         ))
