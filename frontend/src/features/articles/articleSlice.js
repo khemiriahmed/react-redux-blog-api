@@ -1,8 +1,15 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
 
 import api from "../../services/axios";
 
-//  FETCH ARTICLES
+/*
+|--------------------------------------------------------------------------
+| FETCH ARTICLES
+|--------------------------------------------------------------------------
+*/
 export const fetchArticles = createAsyncThunk(
   "articles/fetchArticles",
 
@@ -13,10 +20,83 @@ export const fetchArticles = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error fetching articles",
+        error.response?.data ||
+          "Error fetching articles"
       );
     }
-  },
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| CREATE ARTICLE
+|--------------------------------------------------------------------------
+*/
+export const createArticle = createAsyncThunk(
+  "articles/createArticle",
+
+  async (articleData, thunkAPI) => {
+    try {
+      const response = await api.post(
+        "/articles",
+        articleData
+      );
+
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data ||
+          "Error creating article"
+      );
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE ARTICLE
+|--------------------------------------------------------------------------
+*/
+export const updateArticle = createAsyncThunk(
+  "articles/updateArticle",
+
+  async ({ id, articleData }, thunkAPI) => {
+    try {
+      const response = await api.put(
+        `/articles/${id}`,
+        articleData
+      );
+
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data ||
+          "Error updating article"
+      );
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| DELETE ARTICLE
+|--------------------------------------------------------------------------
+*/
+export const deleteArticle = createAsyncThunk(
+  "articles/deleteArticle",
+
+  async (id, thunkAPI) => {
+    try {
+      await api.delete(`/articles/${id}`);
+
+      return id;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data ||
+          "Error deleting article"
+      );
+    }
+  }
 );
 
 const articleSlice = createSlice({
@@ -33,21 +113,98 @@ const articleSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // PENDING
+      /*
+      |--------------------------------------------------------------------------
+      | FETCH ARTICLES
+      |--------------------------------------------------------------------------
+      */
+
       .addCase(fetchArticles.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
 
-      // FULFILLED
       .addCase(fetchArticles.fulfilled, (state, action) => {
         state.loading = false;
         state.articles = action.payload;
       })
 
-      // REJECTED
       .addCase(fetchArticles.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+
+      /*
+      |--------------------------------------------------------------------------
+      | CREATE ARTICLE
+      |--------------------------------------------------------------------------
+      */
+
+      .addCase(createArticle.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(createArticle.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.articles.unshift(action.payload);
+      })
+
+      .addCase(createArticle.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload;
+      })
+
+      /*
+      |--------------------------------------------------------------------------
+      | UPDATE ARTICLE
+      |--------------------------------------------------------------------------
+      */
+
+      .addCase(updateArticle.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(updateArticle.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.articles = state.articles.map(
+          (article) =>
+            article.id === action.payload.id
+              ? action.payload
+              : article
+        );
+      })
+
+      .addCase(updateArticle.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload;
+      })
+
+      /*
+      |--------------------------------------------------------------------------
+      | DELETE ARTICLE
+      |--------------------------------------------------------------------------
+      */
+
+      .addCase(deleteArticle.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(deleteArticle.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.articles = state.articles.filter(
+          (article) =>
+            article.id !== action.payload
+        );
+      })
+
+      .addCase(deleteArticle.rejected, (state, action) => {
+        state.loading = false;
+
         state.error = action.payload;
       });
   },
