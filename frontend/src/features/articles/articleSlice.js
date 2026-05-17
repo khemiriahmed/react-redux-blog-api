@@ -1,7 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import api from "../../services/axios";
 
@@ -13,18 +10,17 @@ import api from "../../services/axios";
 export const fetchArticles = createAsyncThunk(
   "articles/fetchArticles",
 
-  async (_, thunkAPI) => {
+  async (page = 1, thunkAPI) => {
     try {
-      const response = await api.get("/articles");
+      const response = await api.get(`/articles?page=${page}`);
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data ||
-          "Error fetching articles"
+        error.response?.data || "Error fetching articles",
       );
     }
-  }
+  },
 );
 
 /*
@@ -37,19 +33,15 @@ export const createArticle = createAsyncThunk(
 
   async (articleData, thunkAPI) => {
     try {
-      const response = await api.post(
-        "/articles",
-        articleData
-      );
+      const response = await api.post("/articles", articleData);
 
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data ||
-          "Error creating article"
+        error.response?.data || "Error creating article",
       );
     }
-  }
+  },
 );
 
 /*
@@ -62,19 +54,15 @@ export const updateArticle = createAsyncThunk(
 
   async ({ id, articleData }, thunkAPI) => {
     try {
-      const response = await api.put(
-        `/articles/${id}`,
-        articleData
-      );
+      const response = await api.put(`/articles/${id}`, articleData);
 
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data ||
-          "Error updating article"
+        error.response?.data || "Error updating article",
       );
     }
-  }
+  },
 );
 
 /*
@@ -92,11 +80,10 @@ export const deleteArticle = createAsyncThunk(
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data ||
-          "Error deleting article"
+        error.response?.data || "Error deleting article",
       );
     }
-  }
+  },
 );
 
 const articleSlice = createSlice({
@@ -106,6 +93,8 @@ const articleSlice = createSlice({
     articles: [],
     loading: false,
     error: null,
+    currentPage: 1,
+    lastPage: 1,
   },
 
   reducers: {},
@@ -126,7 +115,12 @@ const articleSlice = createSlice({
 
       .addCase(fetchArticles.fulfilled, (state, action) => {
         state.loading = false;
-        state.articles = action.payload;
+        //state.articles = action.payload;
+        state.articles = action.payload.data;
+
+        state.currentPage = action.payload.meta.current_page;
+
+        state.lastPage = action.payload.meta.last_page;
       })
 
       .addCase(fetchArticles.rejected, (state, action) => {
@@ -169,11 +163,8 @@ const articleSlice = createSlice({
       .addCase(updateArticle.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.articles = state.articles.map(
-          (article) =>
-            article.id === action.payload.id
-              ? action.payload
-              : article
+        state.articles = state.articles.map((article) =>
+          article.id === action.payload.id ? action.payload : article,
         );
       })
 
@@ -197,8 +188,7 @@ const articleSlice = createSlice({
         state.loading = false;
 
         state.articles = state.articles.filter(
-          (article) =>
-            article.id !== action.payload
+          (article) => article.id !== action.payload,
         );
       })
 

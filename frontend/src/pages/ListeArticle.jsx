@@ -2,10 +2,7 @@ import { useEffect } from "react";
 
 import { Link } from "react-router-dom";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   fetchArticles,
@@ -20,11 +17,9 @@ function Home() {
   | REDUX STATE
   |--------------------------------------------------------------------------
   */
-  const {
-    articles,
-    loading,
-    error,
-  } = useSelector((state) => state.articles);
+  const { articles, loading, error, currentPage, lastPage } = useSelector(
+    (state) => state.articles,
+  );
 
   /*
   |--------------------------------------------------------------------------
@@ -32,8 +27,8 @@ function Home() {
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
-    dispatch(fetchArticles());
-  }, [dispatch]);
+    dispatch(fetchArticles(currentPage));
+  }, [dispatch, currentPage]);
 
   /*
   |--------------------------------------------------------------------------
@@ -42,7 +37,7 @@ function Home() {
   */
   const handleDelete = (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this article?"
+      "Are you sure you want to delete this article?",
     );
 
     if (confirmDelete) {
@@ -66,6 +61,23 @@ function Home() {
   }
 
   /*
+|--------------------------------------------------------------------------
+| PAGINATION
+|--------------------------------------------------------------------------
+*/
+  const handleNextPage = () => {
+    if (currentPage < lastPage) {
+      dispatch(fetchArticles(currentPage + 1));
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      dispatch(fetchArticles(currentPage - 1));
+    }
+  };
+
+  /*
   |--------------------------------------------------------------------------
   | ERROR
   |--------------------------------------------------------------------------
@@ -83,14 +95,10 @@ function Home() {
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-6xl mx-auto px-4">
-        
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
-          
           <div>
-            <h1 className="text-4xl font-bold text-gray-800">
-              Blog Articles
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-800">Blog Articles</h1>
 
             <p className="text-gray-500 mt-2">
               Manage your blog articles with React + Laravel API
@@ -107,9 +115,7 @@ function Home() {
         {/* EMPTY */}
         {articles.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-10 text-center">
-            <p className="text-gray-500 text-lg">
-              No articles found.
-            </p>
+            <p className="text-gray-500 text-lg">No articles found.</p>
           </div>
         ) : (
           <div className="grid gap-6">
@@ -120,7 +126,6 @@ function Home() {
               >
                 {/* TOP */}
                 <div className="flex items-start justify-between gap-4">
-                  
                   <div>
                     {/* TITLE */}
                     <h2 className="text-2xl font-bold text-gray-800 mb-3">
@@ -141,7 +146,6 @@ function Home() {
 
                 {/* META */}
                 <div className="flex flex-wrap gap-4 mt-6">
-                  
                   {/* CATEGORY */}
                   <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
                     📂 {article.category?.name || "No Category"}
@@ -155,11 +159,8 @@ function Home() {
 
                 {/* ACTIONS */}
                 <div className="flex gap-4 mt-8">
-                  
                   {/* EDIT */}
-                  <Link
-                    to={`/edit-article/${article.id}`}
-                  >
+                  <Link to={`/edit-article/${article.id}`}>
                     <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl transition duration-300">
                       Edit
                     </button>
@@ -167,9 +168,7 @@ function Home() {
 
                   {/* DELETE */}
                   <button
-                    onClick={() =>
-                      handleDelete(article.id)
-                    }
+                    onClick={() => handleDelete(article.id)}
                     className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition duration-300"
                   >
                     Delete
@@ -179,6 +178,53 @@ function Home() {
             ))}
           </div>
         )}
+      </div>
+      {/* PAGINATION */}
+      <div className="flex items-center justify-center gap-2 mt-10 flex-wrap">
+        {/* PREVIOUS */}
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-xl transition duration-300 ${
+            currentPage === 1
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-gray-800 hover:bg-black text-white"
+          }`}
+        >
+          Previous
+        </button>
+
+        {/* PAGE NUMBERS */}
+        {[...Array(lastPage)].map((_, index) => {
+          const page = index + 1;
+
+          return (
+            <button
+              key={page}
+              onClick={() => dispatch(fetchArticles(page))}
+              className={`w-10 h-10 rounded-xl font-semibold transition duration-300 ${
+                currentPage === page
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-white text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          );
+        })}
+
+        {/* NEXT */}
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === lastPage}
+          className={`px-4 py-2 rounded-xl transition duration-300 ${
+            currentPage === lastPage
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
