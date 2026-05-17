@@ -24,6 +24,8 @@ function Home() {
     articles,
     loading,
     error,
+     currentPage,
+  lastPage,
   } = useSelector((state) => state.articles);
 
   /*
@@ -31,9 +33,9 @@ function Home() {
   | FETCH ARTICLES
   |--------------------------------------------------------------------------
   */
-  useEffect(() => {
-    dispatch(fetchArticles());
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchArticles(currentPage));
+}, [dispatch, currentPage]);
 
   /*
   |--------------------------------------------------------------------------
@@ -64,6 +66,23 @@ function Home() {
       </div>
     );
   }
+
+  /*
+|--------------------------------------------------------------------------
+| PAGINATION
+|--------------------------------------------------------------------------
+*/
+const handleNextPage = () => {
+  if (currentPage < lastPage) {
+    dispatch(fetchArticles(currentPage + 1));
+  }
+};
+
+const handlePrevPage = () => {
+  if (currentPage > 1) {
+    dispatch(fetchArticles(currentPage - 1));
+  }
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -180,6 +199,40 @@ function Home() {
           </div>
         )}
       </div>
+      {/* PAGINATION */}
+<div className="flex items-center justify-center gap-4 mt-10">
+
+  {/* PREVIOUS */}
+  <button
+    onClick={handlePrevPage}
+    disabled={currentPage === 1}
+    className={`px-5 py-2 rounded-xl transition duration-300 ${
+      currentPage === 1
+        ? "bg-gray-300 cursor-not-allowed"
+        : "bg-gray-800 hover:bg-black text-white"
+    }`}
+  >
+    Previous
+  </button>
+
+  {/* PAGE INFO */}
+  <div className="bg-white shadow px-5 py-2 rounded-xl font-semibold text-gray-700">
+    Page {currentPage} / {lastPage}
+  </div>
+
+  {/* NEXT */}
+  <button
+    onClick={handleNextPage}
+    disabled={currentPage === lastPage}
+    className={`px-5 py-2 rounded-xl transition duration-300 ${
+      currentPage === lastPage
+        ? "bg-gray-300 cursor-not-allowed"
+        : "bg-blue-600 hover:bg-blue-700 text-white"
+    }`}
+  >
+    Next
+  </button>
+</div>
     </div>
   );
 }
