@@ -128,9 +128,11 @@ function Home() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     {/* TITLE */}
-                    <h2 className="text-2xl font-bold text-gray-800 mb-3">
-                      {article.title}
-                    </h2>
+                    <Link to={`/articles/${article.id}`}>
+                      <h2 className="text-2xl font-bold text-gray-800 mb-3 hover:text-blue-600 transition duration-300 cursor-pointer">
+                        {article.title}
+                      </h2>
+                    </Link>
 
                     {/* EXCERPT */}
                     <p className="text-gray-600 leading-relaxed">
