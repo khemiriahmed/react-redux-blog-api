@@ -25,6 +25,27 @@ export const fetchArticles = createAsyncThunk(
 
 /*
 |--------------------------------------------------------------------------
+| FETCH SINGLE ARTICLE
+|--------------------------------------------------------------------------
+*/
+export const fetchSingleArticle = createAsyncThunk(
+  "articles/fetchSingleArticle",
+
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.get(`/articles/${id}`);
+
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error fetching article",
+      );
+    }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
 | CREATE ARTICLE
 |--------------------------------------------------------------------------
 */
@@ -91,6 +112,7 @@ const articleSlice = createSlice({
 
   initialState: {
     articles: [],
+    singleArticle: null,
     loading: false,
     error: null,
     currentPage: 1,
@@ -145,6 +167,28 @@ const articleSlice = createSlice({
       })
 
       .addCase(createArticle.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload;
+      })
+
+      /*
+|--------------------------------------------------------------------------
+| FETCH SINGLE ARTICLE
+|--------------------------------------------------------------------------
+*/
+
+      .addCase(fetchSingleArticle.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(fetchSingleArticle.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.singleArticle = action.payload;
+      })
+
+      .addCase(fetchSingleArticle.rejected, (state, action) => {
         state.loading = false;
 
         state.error = action.payload;
