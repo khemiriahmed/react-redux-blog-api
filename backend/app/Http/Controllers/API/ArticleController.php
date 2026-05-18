@@ -84,7 +84,7 @@ class ArticleController extends Controller
             'category',
             'comments.user'
         ])
-        ->where('slug', $slug)
+        //->where('slug', $slug)
         ->firstOrFail();
 
         // increment views
