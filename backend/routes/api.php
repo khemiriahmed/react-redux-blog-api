@@ -1,10 +1,24 @@
 <?php
 
 use App\Http\Controllers\API\ArticleController;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/register', [AuthController::class,'register']);
+
+Route::post('/login', [AuthController::class,'login']);
 
 
 
@@ -33,18 +47,18 @@ Route::get('/articles/{articleId}/comments', [CommentController::class, 'index']
 */
 
 
-    // 📝 Articles
-    Route::post('/articles', [ArticleController::class, 'store']);
-    Route::put('/articles/{id}', [ArticleController::class, 'update']);
-    Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
-    Route::post('/articles/{id}/like', [ArticleController::class, 'like']);
+// 📝 Articles
+Route::post('/articles', [ArticleController::class, 'store']);
+Route::put('/articles/{id}', [ArticleController::class, 'update']);
+Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
+Route::post('/articles/{id}/like', [ArticleController::class, 'like']);
 
-    // 💬 Comments
-    Route::post('/articles/{article}/comments', [CommentController::class, 'store']);
-    Route::put('/comments/{id}', [CommentController::class, 'update']);
-    Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+// 💬 Comments
+Route::post('/articles/{article}/comments', [CommentController::class, 'store']);
+Route::put('/comments/{id}', [CommentController::class, 'update']);
+Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 
-    // 📂 Categories (admin only normalement)
-    Route::post('/categories', [CategoryController::class, 'store']);
-    Route::put('/categories/{id}', [CategoryController::class, 'update']);
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+// 📂 Categories (admin only normalement)
+Route::post('/categories', [CategoryController::class, 'store']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
