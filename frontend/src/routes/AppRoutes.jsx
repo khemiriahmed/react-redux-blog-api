@@ -17,42 +17,46 @@ import Login from "../pages/Login";
 
 import Register from "../pages/Register";
 
+import Profile from "../pages/Profile";
+
+import AdminDashboard from "../pages/AdminDashboard";
+
 /*
 |--------------------------------------------------------------------------
-| COMPONENTS
+| ROUTE GUARDS
 |--------------------------------------------------------------------------
 */
 import ProtectedRoute from "../components/ProtectedRoute";
+
+import AdminRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
   return (
     <Routes>
 
-      {/* HOME */}
+      {/* ================= PUBLIC ================= */}
+
+      <Route path="/" element={<Home />} />
+
+      <Route path="/articles/:id" element={<ArticleDetails />} />
+
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/register" element={<Register />} />
+
+      {/* ================= USER (AUTH REQUIRED) ================= */}
+
       <Route
-        path="/"
-        element={<Home />}
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
       />
 
-      {/* ARTICLE DETAILS */}
-      <Route
-        path="/articles/:id"
-        element={<ArticleDetails />}
-      />
+      {/* ================= ARTICLES PROTECTED ================= */}
 
-      {/* LOGIN */}
-      <Route
-        path="/login"
-        element={<Login />}
-      />
-
-      {/* REGISTER */}
-      <Route
-        path="/register"
-        element={<Register />}
-      />
-
-      {/* CREATE ARTICLE */}
       <Route
         path="/create-article"
         element={
@@ -62,13 +66,23 @@ function AppRoutes() {
         }
       />
 
-      {/* EDIT ARTICLE */}
       <Route
         path="/edit-article/:id"
         element={
           <ProtectedRoute>
             <EditArticle />
           </ProtectedRoute>
+        }
+      />
+
+      {/* ================= ADMIN ONLY ================= */}
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
         }
       />
 
