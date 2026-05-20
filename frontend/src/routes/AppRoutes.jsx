@@ -1,19 +1,77 @@
 import { Routes, Route } from "react-router-dom";
-import ArticleDetails from "../pages/ArticleDetails";
+
+/*
+|--------------------------------------------------------------------------
+| PAGES
+|--------------------------------------------------------------------------
+*/
 import Home from "../pages/ListeArticle";
+
+import ArticleDetails from "../pages/ArticleDetails";
+
 import CreateArticle from "../pages/CreateArticle";
+
 import EditArticle from "../pages/EditArticle";
+
+import Login from "../pages/Login";
+
+import Register from "../pages/Register";
+
+/*
+|--------------------------------------------------------------------------
+| COMPONENTS
+|--------------------------------------------------------------------------
+*/
+import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
 
-      <Route path="/create-article" element={<CreateArticle />} />
+      {/* HOME */}
+      <Route
+        path="/"
+        element={<Home />}
+      />
 
-      <Route path="/edit-article/:id" element={<EditArticle />} />
+      {/* ARTICLE DETAILS */}
+      <Route
+        path="/articles/:id"
+        element={<ArticleDetails />}
+      />
 
-      <Route path="/articles/:id" element={<ArticleDetails />} />
+      {/* LOGIN */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      {/* REGISTER */}
+      <Route
+        path="/register"
+        element={<Register />}
+      />
+
+      {/* CREATE ARTICLE */}
+      <Route
+        path="/create-article"
+        element={
+          <ProtectedRoute>
+            <CreateArticle />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* EDIT ARTICLE */}
+      <Route
+        path="/edit-article/:id"
+        element={
+          <ProtectedRoute>
+            <EditArticle />
+          </ProtectedRoute>
+        }
+      />
+
     </Routes>
   );
 }
