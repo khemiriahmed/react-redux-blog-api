@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import CommentForm from "../components/CommentForm";
+import CommentList from "../components/CommentList";
+import { fetchComments } from "../features/comments/commentSlice";
 
 import {
   useDispatch,
@@ -24,6 +27,9 @@ function ArticleDetails() {
     error,
   } = useSelector((state) => state.articles);
 
+  const { comments } = useSelector(
+  (state) => state.comments
+);
   /*
   |--------------------------------------------------------------------------
   | FETCH ARTICLE
@@ -31,6 +37,7 @@ function ArticleDetails() {
   */
   useEffect(() => {
     dispatch(fetchSingleArticle(id));
+    dispatch(fetchComments(id));
   }, [dispatch, id]);
 
   /*
@@ -130,6 +137,23 @@ function ArticleDetails() {
               {singleArticle.content}
             </p>
           </div>
+
+          {/* COMMENTS */}
+<div className="mt-14">
+
+  <h2 className="text-3xl font-bold text-gray-800 mb-8">
+    Comments
+  </h2>
+
+  {/* ADD COMMENT */}
+  <CommentForm articleId={id} />
+
+  {/* COMMENTS LIST */}
+  <CommentList
+    comments={comments}
+    articleId={id}
+  />
+</div>
 
         </div>
       </div>
