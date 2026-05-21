@@ -1,18 +1,10 @@
 import { useState } from "react";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  registerUser,
-} from "../features/auth/authSlice";
+import { registerUser } from "../features/auth/authSlice";
 
-import {
-  useNavigate,
-  Link,
-} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
   const dispatch = useDispatch();
@@ -24,22 +16,18 @@ function Register() {
   | REDUX STATE
   |--------------------------------------------------------------------------
   */
-  const { loading, error } =
-    useSelector(
-      (state) => state.auth
-    );
+  const { loading, error } = useSelector((state) => state.auth);
 
   /*
   |--------------------------------------------------------------------------
   | FORM STATE
   |--------------------------------------------------------------------------
   */
-  const [formData, setFormData] =
-    useState({
-      name: "",
-      email: "",
-      password: "",
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   /*
   |--------------------------------------------------------------------------
@@ -50,8 +38,7 @@ function Register() {
     setFormData({
       ...formData,
 
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -61,38 +48,25 @@ function Register() {
   |--------------------------------------------------------------------------
   */
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); //Empêche refresh page HTML classique
 
-    const resultAction =
-      await dispatch(
-        registerUser(formData)
-      );
+    const resultAction = await dispatch(registerUser(formData)); //Envoie formulaire vers Redux.
 
-    if (
-      registerUser.fulfilled.match(
-        resultAction
-      )
-    ) {
+    if (registerUser.fulfilled.match(resultAction)) { //Vérifie si API réussit.
       navigate("/");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-
       <div className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-md">
-
         {/* TITLE */}
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
           Register
         </h1>
 
         {/* FORM */}
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* NAME */}
           <input
             type="text"
@@ -129,32 +103,22 @@ function Register() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition duration-300 font-semibold"
           >
-            {loading
-              ? "Creating account..."
-              : "Register"}
+            {loading ? "Creating account..." : "Register"}
           </button>
 
           {/* ERROR */}
           {error && (
-            <p className="text-red-500 text-center">
-              Registration failed
-            </p>
+            <p className="text-red-500 text-center">Registration failed </p>
           )}
-
         </form>
 
         {/* LOGIN LINK */}
         <p className="text-center text-gray-500 mt-6">
           Already have an account ?
-
-          <Link
-            to="/login"
-            className="text-blue-600 ml-2 hover:underline"
-          >
+          <Link to="/login" className="text-blue-600 ml-2 hover:underline">
             Login
           </Link>
         </p>
-
       </div>
     </div>
   );

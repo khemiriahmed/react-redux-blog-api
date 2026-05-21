@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES
@@ -51,9 +52,7 @@ Route::get('/articles/{articleId}/comments', [CommentController::class, 'index']
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return $request->user();
-});
+
 Route::middleware('auth:sanctum')->group(function () {
 
     /*
@@ -61,7 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     | USER PROFILE
     |--------------------------------------------------------------------------
     */
-    //Route::get('/me', [ProfileController::class, 'me']);
+    Route::get('/me', [ProfileController::class, 'me']);
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
 
@@ -92,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {

@@ -4,10 +4,7 @@ import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
 import { fetchComments } from "../features/comments/commentSlice";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { fetchSingleArticle } from "../features/articles/articleSlice";
 
@@ -21,15 +18,11 @@ function ArticleDetails() {
   | REDUX STATE
   |--------------------------------------------------------------------------
   */
-  const {
-    singleArticle,
-    loading,
-    error,
-  } = useSelector((state) => state.articles);
+  const { singleArticle, loading, error } = useSelector(
+    (state) => state.articles,
+  );
 
-  const { comments } = useSelector(
-  (state) => state.comments
-);
+  const { comments } = useSelector((state) => state.comments);
   /*
   |--------------------------------------------------------------------------
   | FETCH ARTICLE
@@ -88,7 +81,6 @@ function ArticleDetails() {
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-4xl mx-auto px-4">
-
         {/* BACK BUTTON */}
         <Link to="/">
           <button className="mb-6 bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-xl transition duration-300">
@@ -98,7 +90,6 @@ function ArticleDetails() {
 
         {/* ARTICLE CARD */}
         <div className="bg-white rounded-3xl shadow-xl p-8">
-
           {/* TITLE */}
           <h1 className="text-5xl font-bold text-gray-800 mb-6">
             {singleArticle.title}
@@ -106,7 +97,6 @@ function ArticleDetails() {
 
           {/* META */}
           <div className="flex flex-wrap gap-4 mb-8">
-
             {/* CATEGORY */}
             <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
               📂 {singleArticle.category?.name}
@@ -121,7 +111,6 @@ function ArticleDetails() {
             <div className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium">
               👁 {singleArticle.view_count} views
             </div>
-
           </div>
 
           {/* EXCERPT */}
@@ -139,22 +128,15 @@ function ArticleDetails() {
           </div>
 
           {/* COMMENTS */}
-<div className="mt-14">
+          <div className="mt-14">
+            <h2 className="text-3xl font-bold text-gray-800 mb-8">Comments</h2>
 
-  <h2 className="text-3xl font-bold text-gray-800 mb-8">
-    Comments
-  </h2>
+            {/* ADD COMMENT */}
+            <CommentForm articleId={id} />
 
-  {/* ADD COMMENT */}
-  <CommentForm articleId={id} />
-
-  {/* COMMENTS LIST */}
-  <CommentList
-    comments={comments}
-    articleId={id}
-  />
-</div>
-
+            {/* COMMENTS LIST */}
+            <CommentList comments={comments} articleId={id} />
+          </div>
         </div>
       </div>
     </div>

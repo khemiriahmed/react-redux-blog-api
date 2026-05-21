@@ -42,7 +42,6 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => $user,
-
             'token' => $token,
         ]);
     }
@@ -56,7 +55,6 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-
             'password' => 'required',
         ]);
 
