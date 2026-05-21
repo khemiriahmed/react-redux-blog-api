@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 
-import {
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { updateArticle } from "../features/articles/articleSlice";
 
@@ -24,18 +18,14 @@ function EditArticle() {
   | REDUX STATE
   |--------------------------------------------------------------------------
   */
-  const { articles } = useSelector(
-    (state) => state.articles
-  );
+  const { articles } = useSelector((state) => state.articles);
 
   /*
   |--------------------------------------------------------------------------
   | FIND ARTICLE
   |--------------------------------------------------------------------------
   */
-  const article = articles.find(
-    (article) => article.id === Number(id)
-  );
+  const article = articles.find((article) => article.id === Number(id));
 
   /*
   |--------------------------------------------------------------------------
@@ -60,8 +50,7 @@ function EditArticle() {
         title: article.title || "",
         content: article.content || "",
         excerpt: article.excerpt || "",
-        category_id:
-          article.category?.id || "",
+        category_id: article.category?.id || "",
       });
     }
   }, [article]);
@@ -91,7 +80,7 @@ function EditArticle() {
       updateArticle({
         id,
         articleData: formData,
-      })
+      }),
     );
 
     alert("Article updated successfully!");
@@ -117,15 +106,11 @@ function EditArticle() {
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-3xl mx-auto px-4">
-
         {/* CARD */}
         <div className="bg-white rounded-3xl shadow-xl p-8">
-
           {/* HEADER */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-800">
-              Edit Article
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-800">Edit Article</h1>
 
             <p className="text-gray-500 mt-2">
               Update your article information
@@ -133,11 +118,7 @@ function EditArticle() {
           </div>
 
           {/* FORM */}
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* TITLE */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">
@@ -204,7 +185,6 @@ function EditArticle() {
 
             {/* BUTTONS */}
             <div className="flex gap-4 pt-4">
-
               {/* UPDATE */}
               <button
                 type="submit"
@@ -221,9 +201,7 @@ function EditArticle() {
               >
                 Cancel
               </button>
-
             </div>
-
           </form>
         </div>
       </div>
