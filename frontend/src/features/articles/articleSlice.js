@@ -13,7 +13,7 @@ export const fetchArticles = createAsyncThunk(
   async (page = 1, thunkAPI) => {
     try {
       const response = await api.get(`/articles?page=${page}`);
-
+      console.log(response.data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -34,7 +34,7 @@ export const fetchSingleArticle = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const response = await api.get(`/articles/${id}`);
-
+      console.log("test", response.data.data);
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -113,6 +113,7 @@ const articleSlice = createSlice({
   initialState: {
     articles: [],
     singleArticle: null,
+    validationErrors: null,
     loading: false,
     error: null,
     currentPage: 1,
@@ -169,7 +170,9 @@ const articleSlice = createSlice({
       .addCase(createArticle.rejected, (state, action) => {
         state.loading = false;
 
-        state.error = action.payload;
+        state.error = action.payload?.message || "Error creating article";
+
+        state.validationErrors = action.payload?.errors || null;
       })
 
       /*
