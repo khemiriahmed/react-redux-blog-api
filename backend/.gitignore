@@ -1,5 +1,6 @@
 *.log
 .DS_Store
+/app/Http/Controllers/API/comment
 .env
 .env.backup
 .env.production
