@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -20,6 +20,7 @@ function Home() {
   const { articles, loading, error, currentPage, lastPage } = useSelector(
     (state) => state.articles,
   );
+  const [search, setSearch] = useState("");
 
   /*
   |--------------------------------------------------------------------------
@@ -44,6 +45,11 @@ function Home() {
       dispatch(deleteArticle(id));
     }
   };
+
+
+  const filteredArticles = articles.filter((article) =>
+  article.title.toLowerCase().includes(search.toLowerCase())
+);
 
   /*
   |--------------------------------------------------------------------------
@@ -103,6 +109,14 @@ function Home() {
             <p className="text-gray-500 mt-2">
               Manage your blog articles with React + Laravel API
             </p>
+
+             <input
+              type="text"
+              placeholder="Search articles..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border px-4 py-2 rounded-xl w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           <Link to="/create-article">
@@ -113,13 +127,13 @@ function Home() {
         </div>
 
         {/* EMPTY */}
-        {articles.length === 0 ? (
+        {filteredArticles.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-10 text-center">
             <p className="text-gray-500 text-lg">No articles found.</p>
           </div>
         ) : (
           <div className="grid gap-6">
-            {articles.map((article) => (
+            {filteredArticles.map((article) => (
               <div
                 key={article.id}
                 className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-6 border border-gray-100"
@@ -127,7 +141,6 @@ function Home() {
                 {/* TOP */}
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    {(article.image)}
                     {/* IMAGE */}
                     {article.image && (
                       <img
