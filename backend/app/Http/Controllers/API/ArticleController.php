@@ -7,6 +7,7 @@ use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ArticleController extends Controller
@@ -21,8 +22,8 @@ class ArticleController extends Controller
             'category',
             'comments'
         ])
-        ->latest()
-        ->paginate(10);
+            ->latest()
+            ->paginate(10);
 
         return ArticleResource::collection($articles);
     }
@@ -84,8 +85,8 @@ class ArticleController extends Controller
             'category',
             'comments.user'
         ])
-        //->where('slug', $slug)
-        ->firstOrFail();
+            //->where('slug', $slug)
+            ->firstOrFail();
 
         // increment views
         $article->increment('view_count');
@@ -96,51 +97,40 @@ class ArticleController extends Controller
     /**
      * Update the specified article
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $article = Article::findOrFail($id);
 
-        // check ownership
-        if ($article->user_id !== Auth::id()) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required',
             'content' => 'required',
-            'excerpt' => 'nullable|string',
+            'category_id' => 'required',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'category_id' => 'required|exists:categories,id',
-            'is_published' => 'nullable|boolean',
         ]);
 
-        $imagePath = $article->image;
-
-        // upload new image
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')
+
+            if ($article->image) {
+                Storage::disk('public')->delete($article->image);
+                var_dump($article->image);
+            }
+
+            $article->image = $request
+                ->file('image')
                 ->store('articles', 'public');
         }
 
         $article->update([
             'title' => $request->title,
-
-            'slug' => Str::slug($request->title . '-' . time()),
-
             'content' => $request->content,
-
             'excerpt' => $request->excerpt,
-
-            'image' => $imagePath,
-
             'category_id' => $request->category_id,
-
-            'is_published' => $request->is_published ?? true,
+            'image' => $article->image,
         ]);
 
-        return new ArticleResource($article);
+        return response()->json([
+            'data' => $article
+        ]);
     }
 
     /**
