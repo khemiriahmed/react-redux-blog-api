@@ -75,7 +75,13 @@ export const updateArticle = createAsyncThunk(
 
   async ({ id, articleData }, thunkAPI) => {
     try {
-      const response = await api.put(`/articles/${id}`, articleData);
+      const response = await api.post(`/articles/${id}?_method=PUT`, articleData,
+         {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       return response.data.data;
     } catch (error) {

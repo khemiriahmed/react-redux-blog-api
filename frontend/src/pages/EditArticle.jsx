@@ -37,7 +37,9 @@ function EditArticle() {
     content: "",
     excerpt: "",
     category_id: "",
+    image: null,
   });
+  const [preview, setPreview] = useState(null);
 
   /*
   |--------------------------------------------------------------------------
@@ -51,7 +53,11 @@ function EditArticle() {
         content: article.content || "",
         excerpt: article.excerpt || "",
         category_id: article.category?.id || "",
+        image: null,
       });
+      if (article.image) {
+        setPreview(`http://127.0.0.1:8000/storage/${article.image}`);
+      }
     }
   }, [article]);
 
@@ -68,6 +74,19 @@ function EditArticle() {
     });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    setFormData({
+      ...formData,
+      image: file,
+    });
+
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
   /*
   |--------------------------------------------------------------------------
   | HANDLE SUBMIT
@@ -76,16 +95,30 @@ function EditArticle() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await dispatch(
+    const data = new FormData();
+
+    data.append("title", formData.title);
+    data.append("content", formData.content);
+    data.append("excerpt", formData.excerpt);
+    data.append("category_id", formData.category_id);
+
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
+
+    for (let pair of data.entries()) {
+  console.log(pair[0], pair[1]);
+}
+    const result = await dispatch(
       updateArticle({
         id,
-        articleData: formData,
+        articleData: data,
       }),
     );
 
-    alert("Article updated successfully!");
-
-    navigate("/");
+    if (updateArticle.fulfilled.match(result)) {
+      navigate("/");
+    }
   };
 
   /*
@@ -181,6 +214,28 @@ function EditArticle() {
                 placeholder="Category ID"
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
               />
+            </div>
+
+            {/* IMAGE */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Article Image
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3"
+              />
+
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="mt-4 w-full h-64 object-cover rounded-xl border"
+                />
+              )}
             </div>
 
             {/* BUTTONS */}

@@ -127,6 +127,15 @@ function Home() {
                 {/* TOP */}
                 <div className="flex items-start justify-between gap-4">
                   <div>
+                    {(article.image)}
+                    {/* IMAGE */}
+                    {article.image && (
+                      <img
+                        src={`${article.image}`}
+                        alt={article.title}
+                        className="w-full h-56 object-cover"
+                      />
+                    )}
                     {/* TITLE */}
                     <Link to={`/articles/${article.id}`}>
                       <h2 className="text-2xl font-bold text-gray-800 mb-3 hover:text-blue-600 transition duration-300 cursor-pointer">
@@ -162,6 +171,12 @@ function Home() {
                 {/* ACTIONS */}
                 <div className="flex gap-4 mt-8">
                   {/* EDIT */}
+                  <Link
+                    to={`/articles/${article.id}`}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-xl"
+                  >
+                    Read More
+                  </Link>
                   <Link to={`/edit-article/${article.id}`}>
                     <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl transition duration-300">
                       Edit
