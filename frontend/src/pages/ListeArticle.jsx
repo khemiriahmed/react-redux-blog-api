@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import { Link } from "react-router-dom";
-
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -20,22 +18,71 @@ function Home() {
   const { articles, loading, error, currentPage, lastPage } = useSelector(
     (state) => state.articles,
   );
+
+  /*
+  |--------------------------------------------------------------------------
+  | SEARCH STATES
+  |--------------------------------------------------------------------------
+  */
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
 
   /*
   |--------------------------------------------------------------------------
-  | FETCH ARTICLES
+  | FETCH ARTICLES (ON LOAD / PAGE CHANGE ONLY)
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
-    dispatch(fetchArticles(
-      {
+    dispatch(
+      fetchArticles({
         page: currentPage,
         search,
-      }
-    ));
-  }, [dispatch, currentPage,search]);
+      }),
+    );
+  }, [dispatch, currentPage]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | SEARCH HANDLER
+  |--------------------------------------------------------------------------
+  */
+  const handleSearch = () => {
+    setSearch(searchInput);
+
+    dispatch(
+      fetchArticles({
+        page: 1,
+        search: searchInput,
+      }),
+    );
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | PAGINATION HANDLERS
+  |--------------------------------------------------------------------------
+  */
+  const handleNextPage = () => {
+    if (currentPage < lastPage) {
+      dispatch(
+        fetchArticles({
+          page: currentPage + 1,
+          search,
+        }),
+      );
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      dispatch(
+        fetchArticles({
+          page: currentPage - 1,
+          search,
+        }),
+      );
+    }
+  };
 
   /*
   |--------------------------------------------------------------------------
@@ -52,14 +99,9 @@ function Home() {
     }
   };
 
-
-//   const filteredArticles = articles.filter((article) =>
-//   article.title.toLowerCase().includes(search.toLowerCase())
-// );
-
   /*
   |--------------------------------------------------------------------------
-  | LOADING
+  | LOADING STATE
   |--------------------------------------------------------------------------
   */
   if (loading) {
@@ -73,36 +115,8 @@ function Home() {
   }
 
   /*
-|--------------------------------------------------------------------------
-| PAGINATION
-|--------------------------------------------------------------------------
-*/
-  const handleNextPage = () => {
-    if (currentPage < lastPage) {
-      dispatch(fetchArticles(currentPage + 1));
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      dispatch(fetchArticles(currentPage - 1));
-    }
-  };
-
-const handleSearch = () => {
-  setSearch(searchInput);
-
-  dispatch(
-    fetchArticles({
-      page: 1,
-      search: searchInput,
-    })
-  );
-};
-
-  /*
   |--------------------------------------------------------------------------
-  | ERROR
+  | ERROR STATE
   |--------------------------------------------------------------------------
   */
   if (error) {
@@ -115,6 +129,11 @@ const handleSearch = () => {
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | RENDER
+  |--------------------------------------------------------------------------
+  */
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-6xl mx-auto px-4">
@@ -127,103 +146,104 @@ const handleSearch = () => {
               Manage your blog articles with React + Laravel API
             </p>
 
-             <input
-              type="text"
-              placeholder="Search articles..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            {/* SEARCH */}
+            <div className="flex gap-3 mt-4">
+              <input
+                type="text"
+                placeholder="Search articles..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
+                className="border border-gray-300 rounded-xl px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
               <button
                 onClick={handleSearch}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl"
               >
                 Search
               </button>
-            
+            </div>
           </div>
 
+          {/* CREATE BUTTON */}
           <Link to="/create-article">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition duration-300">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md">
               + Create Article
             </button>
           </Link>
         </div>
 
         {/* EMPTY */}
-        {filteredArticles.length === 0 ? (
+        {articles.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-10 text-center">
             <p className="text-gray-500 text-lg">No articles found.</p>
           </div>
         ) : (
           <div className="grid gap-6">
-            {filteredArticles.map((article) => (
+            {/* LIST */}
+            {articles.map((article) => (
               <div
                 key={article.id}
-                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-6 border border-gray-100"
+                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6"
               >
-                {/* TOP */}
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    {/* IMAGE */}
-                    {article.image && (
-                      <img
-                        src={`${article.image}`}
-                        alt={article.title}
-                        className="w-full h-56 object-cover"
-                      />
-                    )}
-                    {/* TITLE */}
-                    <Link to={`/articles/${article.id}`}>
-                      <h2 className="text-2xl font-bold text-gray-800 mb-3 hover:text-blue-600 transition duration-300 cursor-pointer">
-                        {article.title}
-                      </h2>
-                    </Link>
+                {/* IMAGE */}
+                {article.image && (
+                  <img
+                    src={`http://127.0.0.1:8000/storage/${article.image}`}
+                    alt={article.title}
+                    className="w-full h-56 object-cover rounded-xl mb-4"
+                  />
+                )}
 
-                    {/* EXCERPT */}
-                    <p className="text-gray-600 leading-relaxed">
-                      {article.excerpt}
-                    </p>
-                  </div>
+                {/* TITLE */}
+                <Link to={`/articles/${article.id}`}>
+                  <h2 className="text-2xl font-bold text-gray-800 hover:text-blue-600">
+                    {article.title}
+                  </h2>
+                </Link>
 
-                  {/* VIEWS */}
-                  <div className="bg-gray-100 px-4 py-2 rounded-xl text-sm text-gray-600 whitespace-nowrap">
-                    👁 {article.view_count} views
-                  </div>
-                </div>
+                {/* EXCERPT */}
+                <p className="text-gray-600 mt-2">{article.excerpt}</p>
 
                 {/* META */}
-                <div className="flex flex-wrap gap-4 mt-6">
-                  {/* CATEGORY */}
-                  <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
-                    📂 {article.category?.name || "No Category"}
-                  </div>
+                <div className="flex gap-3 mt-4 text-sm">
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                    📂 {article.category?.name}
+                  </span>
 
-                  {/* AUTHOR */}
-                  <div className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
-                    👤 {article.author?.name || "Unknown"}
-                  </div>
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                    👤 {article.author?.name}
+                  </span>
+
+                  <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                    👁 {article.view_count}
+                  </span>
                 </div>
 
                 {/* ACTIONS */}
-                <div className="flex gap-4 mt-8">
-                  {/* EDIT */}
+                <div className="flex gap-3 mt-6">
                   <Link
                     to={`/articles/${article.id}`}
                     className="bg-blue-600 text-white px-4 py-2 rounded-xl"
                   >
-                    Read More
-                  </Link>
-                  <Link to={`/edit-article/${article.id}`}>
-                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-xl transition duration-300">
-                      Edit
-                    </button>
+                    Read
                   </Link>
 
-                  {/* DELETE */}
+                  <Link
+                    to={`/edit-article/${article.id}`}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+                  >
+                    Edit
+                  </Link>
+
                   <button
                     onClick={() => handleDelete(article.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition duration-300"
+                    className="bg-red-500 text-white px-4 py-2 rounded-xl"
                   >
                     Delete
                   </button>
@@ -232,53 +252,59 @@ const handleSearch = () => {
             ))}
           </div>
         )}
-      </div>
-      {/* PAGINATION */}
-      <div className="flex items-center justify-center gap-2 mt-10 flex-wrap">
-        {/* PREVIOUS */}
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-xl transition duration-300 ${
-            currentPage === 1
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-gray-800 hover:bg-black text-white"
-          }`}
-        >
-          Previous
-        </button>
 
-        {/* PAGE NUMBERS */}
-        {[...Array(lastPage)].map((_, index) => {
-          const page = index + 1;
+        {/* PAGINATION */}
+        <div className="flex items-center justify-center gap-3 mt-10 flex-wrap">
+          {/* PREV */}
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-xl ${
+              currentPage === 1
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-gray-800 text-white"
+            }`}
+          >
+            Prev
+          </button>
 
-          return (
-            <button
-              key={page}
-              onClick={() => dispatch(fetchArticles(page))}
-              className={`w-10 h-10 rounded-xl font-semibold transition duration-300 ${
-                currentPage === page
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-white text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {page}
-            </button>
-          );
-        })}
+          {/* NUMBERS */}
+          {[...Array(lastPage)].map((_, index) => {
+            const page = index + 1;
 
-        {/* NEXT */}
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === lastPage}
-          className={`px-4 py-2 rounded-xl transition duration-300 ${
-            currentPage === lastPage
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
-          }`}
-        >
-          Next
-        </button>
+            return (
+              <button
+                key={page}
+                onClick={() =>
+                  dispatch(
+                    fetchArticles({
+                      page,
+                      search,
+                    }),
+                  )
+                }
+                className={`w-10 h-10 rounded-xl ${
+                  currentPage === page ? "bg-blue-600 text-white" : "bg-white"
+                }`}
+              >
+                {page}
+              </button>
+            );
+          })}
+
+          {/* NEXT */}
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === lastPage}
+            className={`px-4 py-2 rounded-xl ${
+              currentPage === lastPage
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-blue-600 text-white"
+            }`}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
