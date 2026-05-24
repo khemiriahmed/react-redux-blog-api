@@ -10,10 +10,10 @@ import api from "../../services/axios";
 export const fetchArticles = createAsyncThunk(
   "articles/fetchArticles",
 
-  async (page = 1, thunkAPI) => {
+  async ({page = 1,search =""}, thunkAPI) => {
     try {
-      const response = await api.get(`/articles?page=${page}`);
-      console.log(response.data);
+      const response = await api.get(`/articles?page=${page}&search=${search}`);
+      //console.log(response.data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
