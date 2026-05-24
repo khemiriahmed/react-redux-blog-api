@@ -28,8 +28,13 @@ function Home() {
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
-    dispatch(fetchArticles(currentPage));
-  }, [dispatch, currentPage]);
+    dispatch(fetchArticles(
+      {
+        page: currentPage,
+        search,
+      }
+    ));
+  }, [dispatch, currentPage,search]);
 
   /*
   |--------------------------------------------------------------------------
