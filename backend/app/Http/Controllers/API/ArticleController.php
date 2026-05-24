@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+use App\Models\ArticleLike;
+
 class ArticleController extends Controller
 {
     /**
@@ -171,15 +173,30 @@ class ArticleController extends Controller
     /**
      * Like article
      */
-    public function like($id)
-    {
-        $article = Article::findOrFail($id);
+  public function like($id)
+{
+    $article = Article::findOrFail($id);
 
-        $article->increment('view_count');
+    $like = ArticleLike::where('article_id', $id)
+        ->where('user_id', auth()->id() ?? null)
+        ->first();
 
+    if ($like) {
+        $like->delete();
         return response()->json([
-            'message' => 'Article liked successfully',
-            'views' => $article->view_count
+            'liked' => false,
+            'message' => 'Unliked'
         ]);
     }
+
+    ArticleLike::create([
+        'article_id' => $id,
+        'user_id' => auth()->id() ?? null,
+    ]);
+
+    return response()->json([
+        'liked' => true,
+        'message' => 'Liked'
+    ]);
+}
 }
