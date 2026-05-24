@@ -20,6 +20,7 @@ function Home() {
   const { articles, loading, error, currentPage, lastPage } = useSelector(
     (state) => state.articles,
   );
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
 
   /*
@@ -52,9 +53,9 @@ function Home() {
   };
 
 
-  const filteredArticles = articles.filter((article) =>
-  article.title.toLowerCase().includes(search.toLowerCase())
-);
+//   const filteredArticles = articles.filter((article) =>
+//   article.title.toLowerCase().includes(search.toLowerCase())
+// );
 
   /*
   |--------------------------------------------------------------------------
@@ -87,6 +88,17 @@ function Home() {
       dispatch(fetchArticles(currentPage - 1));
     }
   };
+
+const handleSearch = () => {
+  setSearch(searchInput);
+
+  dispatch(
+    fetchArticles({
+      page: 1,
+      search: searchInput,
+    })
+  );
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -122,6 +134,13 @@ function Home() {
               onChange={(e) => setSearch(e.target.value)}
               className="border border-gray-300 rounded-xl px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+              <button
+                onClick={handleSearch}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+              >
+                Search
+              </button>
+            
           </div>
 
           <Link to="/create-article">
