@@ -15,13 +15,27 @@ class ArticleController extends Controller
     /**
      * Display a listing of articles
      */
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::with([
+        $query = Article::with([
             'user',
             'category',
             'comments'
-        ])
+        ]);
+
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+
+        $articles = $query
             ->latest()
             ->paginate(10);
 
