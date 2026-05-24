@@ -199,4 +199,13 @@ class ArticleController extends Controller
         'message' => 'Liked'
     ]);
 }
+
+public function likesCount($id)
+{
+    $count = ArticleLike::where('article_id', $id)->count();
+
+    return response()->json([
+        'likes' => $count
+    ]);
+}
 }
