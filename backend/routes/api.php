@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/articles/{id}', [ArticleController::class, 'update']);
     Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
     Route::post('/articles/{id}/like', [ArticleController::class, 'like']);
+    Route::get('/articles/{id}/likes', [ArticleController::class, 'likesCount']);
 
     /*
     |--------------------------------------------------------------------------
