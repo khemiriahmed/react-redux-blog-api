@@ -173,39 +173,39 @@ class ArticleController extends Controller
     /**
      * Like article
      */
-  public function like($id)
-{
-    $article = Article::findOrFail($id);
+    public function like($id)
+    {
+        $article = Article::findOrFail($id);
 
-    $like = ArticleLike::where('article_id', $id)
-        ->where('user_id', auth()->id() ?? null)
-        ->first();
+        $like = ArticleLike::where('article_id', $id)
+            ->where('user_id', auth()->id() ?? null)
+            ->first();
 
-    if ($like) {
-        $like->delete();
+        if ($like) {
+            $like->delete();
+            return response()->json([
+                'liked' => false,
+                'message' => 'Unliked'
+            ]);
+        }
+
+        ArticleLike::create([
+            'article_id' => $id,
+            'user_id' => auth()->id() ?? null,
+        ]);
+
         return response()->json([
-            'liked' => false,
-            'message' => 'Unliked'
+            'liked' => true,
+            'message' => 'Liked'
         ]);
     }
 
-    ArticleLike::create([
-        'article_id' => $id,
-        'user_id' => auth()->id() ?? null,
-    ]);
+    public function likesCount($id)
+    {
+        $count = ArticleLike::where('article_id', $id)->count();
 
-    return response()->json([
-        'liked' => true,
-        'message' => 'Liked'
-    ]);
-}
-
-public function likesCount($id)
-{
-    $count = ArticleLike::where('article_id', $id)->count();
-
-    return response()->json([
-        'likes' => $count
-    ]);
-}
+        return response()->json([
+            'likes' => $count
+        ]);
+    }
 }
