@@ -99,15 +99,15 @@ function Home() {
     }
   };
 
-   /*
+  /*
   |--------------------------------------------------------------------------
   | LIKE ARTICLE
   |--------------------------------------------------------------------------
   */
 
   const handleLike = (id) => {
-  dispatch(likeArticle(id));
-};
+    dispatch(likeArticle(id));
+  };
 
   /*
   |--------------------------------------------------------------------------
@@ -259,19 +259,17 @@ function Home() {
                   </button>
                 </div>
                 <button
-  onClick={() => handleLike(article.id)}
-  className={`px-4 py-2 rounded-xl transition ${
-    article.liked
-      ? "bg-red-500 text-white"
-      : "bg-gray-200 text-gray-700"
-  }`}
->
-  ❤️ {article.likes_count || 0}
-</button>
+                  onClick={() => handleLike(article.id)}
+                  className={`px-4 py-2 rounded-xl transition ${
+                    article.liked
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  ❤️ {article.likes_count || 0}
+                </button>
               </div>
-              
             ))}
-            
           </div>
         )}
 
