@@ -49,9 +49,14 @@ class Article extends Model
         return $this->hasMany(Comment::class);
     }
 
+    // public function likes()
+    // {
+    //     return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+    // }
+
     public function likes()
     {
-        return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+        return $this->hasMany(ArticleLike::class);
     }
 
     /**
@@ -84,7 +89,7 @@ class Article extends Model
     public function setContentAttribute($value)
     {
         $this->attributes['content'] = $value;
-        
+
         // Calculer le temps de lecture (moyenne 200 mots/min)
         $wordCount = str_word_count(strip_tags($value));
         $this->attributes['reading_time'] = ceil($wordCount / 200);
@@ -96,8 +101,8 @@ class Article extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-                     ->whereNotNull('published_at')
-                     ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeLatest($query)
@@ -114,17 +119,20 @@ class Article extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('title', 'like', "%{$search}%")
-              ->orWhere('content', 'like', "%{$search}%")
-              ->orWhere('excerpt', 'like', "%{$search}%");
+                ->orWhere('content', 'like', "%{$search}%")
+                ->orWhere('excerpt', 'like', "%{$search}%");
         });
     }
 
     public function scopeWithRelations($query)
     {
         return $query->with(['user:id,name', 'category:id,name,slug,color'])
-                     ->withCount(['comments' => function ($q) {
-                         $q->where('is_approved', true);
-                     }, 'likes']);
+            ->withCount([
+                'comments' => function ($q) {
+                    $q->where('is_approved', true);
+                },
+                'likes'
+            ]);
     }
 
     /**

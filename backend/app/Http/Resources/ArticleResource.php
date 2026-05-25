@@ -55,6 +55,12 @@ class ArticleResource extends JsonResource
             'comments' => CommentResource::collection(
                 $this->whenLoaded('comments')
             ),
+
+            'user_liked' => auth()->check()
+                ? $this->likes()->where('user_id', auth()->id())->exists()
+                : false,
+
+            'likes_count' => $this->likes()->count(),
         ];
     }
 }

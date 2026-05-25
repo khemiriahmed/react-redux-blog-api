@@ -113,6 +113,18 @@ export const deleteArticle = createAsyncThunk(
   },
 );
 
+export const likeArticle = createAsyncThunk(
+  "articles/likeArticle",
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.post(`/articles/${id}/like`);
+      return { id, ...response.data };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 const articleSlice = createSlice({
   name: "articles",
 
@@ -249,8 +261,18 @@ const articleSlice = createSlice({
         state.loading = false;
 
         state.error = action.payload;
-      });
+      })
+
+      .addCase(likeArticle.fulfilled, (state, action) => {
+  const article = state.articles.find(a => a.id === action.payload.id);
+
+  if (article) {
+    article.liked = action.payload.liked;
+    article.likes_count = action.payload.likes_count;
+  }
+})
   },
+  
 });
 
 export default articleSlice.reducer;
