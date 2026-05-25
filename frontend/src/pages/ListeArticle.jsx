@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import { likeArticle } from "../features/articles/articleSlice";
 import {
   fetchArticles,
   deleteArticle,
@@ -99,6 +99,16 @@ function Home() {
     }
   };
 
+   /*
+  |--------------------------------------------------------------------------
+  | LIKE ARTICLE
+  |--------------------------------------------------------------------------
+  */
+
+  const handleLike = (id) => {
+  dispatch(likeArticle(id));
+};
+
   /*
   |--------------------------------------------------------------------------
   | LOADING STATE
@@ -194,7 +204,7 @@ function Home() {
                 {/* IMAGE */}
                 {article.image && (
                   <img
-                    src={`http://127.0.0.1:8000/storage/${article.image}`}
+                    src={`${article.image}`}
                     alt={article.title}
                     className="w-full h-56 object-cover rounded-xl mb-4"
                   />
@@ -248,8 +258,20 @@ function Home() {
                     Delete
                   </button>
                 </div>
+                <button
+  onClick={() => handleLike(article.id)}
+  className={`px-4 py-2 rounded-xl transition ${
+    article.liked
+      ? "bg-red-500 text-white"
+      : "bg-gray-200 text-gray-700"
+  }`}
+>
+  ❤️ {article.likes_count || 0}
+</button>
               </div>
+              
             ))}
+            
           </div>
         )}
 
