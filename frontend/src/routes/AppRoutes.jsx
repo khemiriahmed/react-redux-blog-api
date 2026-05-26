@@ -29,11 +29,13 @@ import AdminDashboard from "../pages/AdminDashboard";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 import AdminRoute from "../components/ProtectedRoute";
+import Categories from "../pages/categorie/LIsteCategorie";
+import CreateCategory from "../pages/categorie/CreateCategory";
+import CategoryDetails from "../pages/categorie/DetailsCategory";
 
 function AppRoutes() {
   return (
     <Routes>
-
       {/* ================= PUBLIC ================= */}
 
       <Route path="/" element={<Home />} />
@@ -86,6 +88,11 @@ function AppRoutes() {
         }
       />
 
+      <Route path="/categories" element={<Categories />} />
+
+      <Route path="/create-category" element={<CreateCategory />} />
+
+      <Route path="/categories/:slug" element={<CategoryDetails />} />
     </Routes>
   );
 }
