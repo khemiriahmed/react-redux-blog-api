@@ -22,6 +22,13 @@ class CategoryController extends Controller
         return CategoryResource::collection($categories);
     }
 
+
+    public function edit($id)
+    {
+        $category =Category::findOrFail($id);
+
+        return new CategoryResource($category);
+    }
     /**
      * POST /categories
      */
@@ -45,9 +52,9 @@ class CategoryController extends Controller
     public function show(string $slug)
     {
         $category = Category::with([
-                'articles.user',
-                'articles.comments'
-            ])
+            'articles.user',
+            'articles.comments'
+        ])
             ->where('slug', $slug)
             ->firstOrFail();
 

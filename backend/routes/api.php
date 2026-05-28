@@ -89,6 +89,8 @@ Route::middleware('auth:sanctum')->group(function () {
     | CATEGORIES (ADMIN LATER)
     |--------------------------------------------------------------------------
     */
+    Route::get('/categories/edit/{id}',[CategoryController::class, 'edit']
+    );
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
@@ -96,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
-    Route::get('/admin/dashboard', fn () => [
+    Route::get('/admin/dashboard', fn() => [
         'users' => \App\Models\User::count(),
         'articles' => \App\Models\Article::count(),
         'comments' => \App\Models\Comment::count(),
