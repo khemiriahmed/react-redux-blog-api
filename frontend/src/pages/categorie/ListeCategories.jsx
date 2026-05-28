@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategories,
   deleteCategory,
-} from "../features/categories/categorySlice";
+} from "../../features/categories/categorySlice";
 
 function ListeCategories() {
   const dispatch = useDispatch();
