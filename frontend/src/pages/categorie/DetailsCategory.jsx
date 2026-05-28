@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchSingleCategory } from "../features/categories/categorySlice";
+import { fetchSingleCategory } from "../../features/categories/categorySlice";
 
-function CategoryDetails() {
+function DetailsCategory() {
   const { slug } = useParams();
 
   const dispatch = useDispatch();
@@ -52,4 +52,4 @@ function CategoryDetails() {
   );
 }
 
-export default CategoryDetails;
+export default DetailsCategory;

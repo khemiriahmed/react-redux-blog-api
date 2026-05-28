@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
 
-import { createCategory } from "../features/categories/categorySlice";
+import { createCategory } from "../../features/categories/categorySlice";
 
 function CreateCategory() {
   const dispatch = useDispatch();

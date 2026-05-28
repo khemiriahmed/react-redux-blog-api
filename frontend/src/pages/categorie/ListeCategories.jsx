@@ -5,15 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategories,
   deleteCategory,
-} from "../features/categories/categorySlice";
+} from "../../features/categories/categorySlice";
 
-function Categories() {
+function ListeCategories() {
   const dispatch = useDispatch();
 
   const { categories, loading } = useSelector((state) => state.categories);
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategories()); 125
   }, [dispatch]);
 
   const handleDelete = (id) => {
@@ -70,4 +70,4 @@ function Categories() {
   );
 }
 
-export default Categories;
+export default ListeCategories;
