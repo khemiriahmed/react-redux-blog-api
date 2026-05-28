@@ -80,6 +80,34 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
+
+/*
+|--------------------------------------------------------------------------
+| EDIT CATEGORY
+|--------------------------------------------------------------------------
+*/
+
+export const fetchCategoryById = createAsyncThunk(
+  "categories/fetchCategoryById",
+
+  async (id, thunkAPI) => {
+    try {
+
+      const response =
+        await api.get(`/categories/${id}`);
+
+      return response.data.data;
+
+    } catch (error) {
+
+      return thunkAPI.rejectWithValue(
+        error.response?.data
+      );
+
+    }
+  }
+);
+
 /*
 |--------------------------------------------------------------------------
 | DELETE CATEGORY
