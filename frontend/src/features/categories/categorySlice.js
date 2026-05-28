@@ -88,7 +88,7 @@ export const fetchCategoryById = createAsyncThunk(
 
   async (id, thunkAPI) => {
     try {
-      const response = await api.get(`/categories/${id}`);
+      const response = await api.get(`/categories/edit/${id}`);
 
       return response.data.data;
     } catch (error) {
