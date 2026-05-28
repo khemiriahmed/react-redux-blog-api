@@ -15,7 +15,7 @@ import Profile from "../pages/Profile";
 import AdminDashboard from "../pages/AdminDashboard";
 
 import Categories from "../pages/categorie/ListeCategories";
-// import CreateCategory from "../pages/categorie/CreateCategory";
+ import CreateCategory from "../pages/categorie/CreateCategory";
 // import CategoryDetails from "../pages/categorie/DetailsCategory";
 
 /*
@@ -86,7 +86,16 @@ function AppRoutes() {
         path="/categories"
         element={<Categories />}
       />
+   
 
+      <Route
+        path="/create-category"
+        element={
+          <ProtectedRoute>
+            <CreateCategory />
+          </ProtectedRoute>
+        }
+      />
 
 
       {/* ================= ADMIN ================= */}
