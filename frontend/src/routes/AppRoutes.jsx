@@ -16,6 +16,7 @@ import AdminDashboard from "../pages/AdminDashboard";
 
 import Categories from "../pages/categorie/ListeCategories";
 import CreateCategory from "../pages/categorie/CreateCategory";
+import EditCategory from "../pages/categorie/EditCategory";
 import CategoryDetails from "../pages/categorie/DetailsCategory";
 
 /*
@@ -29,25 +30,15 @@ import AdminRoute from "../components/AdminRoute";
 function AppRoutes() {
   return (
     <Routes>
-
       {/* ================= PUBLIC ================= */}
 
       <Route path="/" element={<Home />} />
 
-      <Route
-        path="/articles/:id"
-        element={<ArticleDetails />}
-      />
+      <Route path="/articles/:id" element={<ArticleDetails />} />
 
-      <Route
-        path="/login"
-        element={<Login />}
-      />
+      <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/register"
-        element={<Register />}
-      />
+      <Route path="/register" element={<Register />} />
 
       {/* ================= USER ================= */}
 
@@ -82,14 +73,8 @@ function AppRoutes() {
 
       {/* ================= CATEGORIES ================= */}
 
-      <Route
-        path="/categories"
-        element={<Categories />}
-      />
-      <Route
-        path="/categories/:slug"
-        element={<CategoryDetails />}
-      />
+      <Route path="/categories" element={<Categories />} />
+      <Route path="/categories/:slug" element={<CategoryDetails />} />
 
       <Route
         path="/create-category"
@@ -99,7 +84,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/edit-category/:id"
+        element={
+          <ProtectedRoute>
+            <EditCategory />
+          </ProtectedRoute>
+        }
+      />
 
       {/* ================= ADMIN ================= */}
 
@@ -111,7 +103,6 @@ function AppRoutes() {
           </AdminRoute>
         }
       />
-
     </Routes>
   );
 }

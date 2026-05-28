@@ -15,10 +15,10 @@ export const fetchCategories = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error fetching categories"
+        error.response?.data || "Error fetching categories",
       );
     }
-  }
+  },
 );
 
 /*
@@ -35,10 +35,10 @@ export const fetchSingleCategory = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error fetching category"
+        error.response?.data || "Error fetching category",
       );
     }
-  }
+  },
 );
 
 /*
@@ -56,7 +56,7 @@ export const createCategory = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
     }
-  }
+  },
 );
 
 /*
@@ -68,16 +68,33 @@ export const updateCategory = createAsyncThunk(
   "categories/updateCategory",
   async ({ id, categoryData }, thunkAPI) => {
     try {
-      const response = await api.put(
-        `/categories/${id}`,
-        categoryData
-      );
+      const response = await api.put(`/categories/${id}`, categoryData);
 
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
     }
-  }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| EDIT CATEGORY
+|--------------------------------------------------------------------------
+*/
+
+export const fetchCategoryById = createAsyncThunk(
+  "categories/fetchCategoryById",
+
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.get(`/categories/${id}`);
+
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data);
+    }
+  },
 );
 
 /*
@@ -95,7 +112,7 @@ export const deleteCategory = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
     }
-  }
+  },
 );
 
 const categorySlice = createSlice({
@@ -137,15 +154,17 @@ const categorySlice = createSlice({
 
       .addCase(updateCategory.fulfilled, (state, action) => {
         state.categories = state.categories.map((category) =>
-          category.id === action.payload.id
-            ? action.payload
-            : category
+          category.id === action.payload.id ? action.payload : category,
         );
+      })
+
+      .addCase(fetchCategoryById.fulfilled, (state, action) => {
+        state.singleCategory = action.payload;
       })
 
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.categories = state.categories.filter(
-          (category) => category.id !== action.payload
+          (category) => category.id !== action.payload,
         );
       });
   },
