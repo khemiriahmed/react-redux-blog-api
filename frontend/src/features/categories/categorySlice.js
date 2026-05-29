@@ -123,6 +123,8 @@ const categorySlice = createSlice({
     singleCategory: null,
     loading: false,
     error: null,
+    currentPage: 1,
+    lastPage: 1,
   },
 
   reducers: {},
