@@ -10,11 +10,11 @@ import {
 function ListeCategories() {
   const dispatch = useDispatch();
 
-  const { categories, loading } = useSelector((state) => state.categories);
+  const { categories, loading, currentPage, lastPage, } = useSelector((state) => state.categories);
 
   useEffect(() => {
-    dispatch(fetchCategories()); 125
-  }, [dispatch]);
+    dispatch(fetchCategories(currentPage));
+  }, [dispatch,currentPage]);
 
   const handleDelete = (id) => {
     if (window.confirm("Delete category ?")) {
