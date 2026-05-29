@@ -10,11 +10,13 @@ import {
 function ListeCategories() {
   const dispatch = useDispatch();
 
-  const { categories, loading, currentPage, lastPage, } = useSelector((state) => state.categories);
+  const { categories, loading, currentPage, lastPage } = useSelector(
+    (state) => state.categories,
+  );
 
   useEffect(() => {
     dispatch(fetchCategories(currentPage));
-  }, [dispatch,currentPage]);
+  }, [dispatch, currentPage]);
 
   const handleDelete = (id) => {
     if (window.confirm("Delete category ?")) {
@@ -22,8 +24,20 @@ function ListeCategories() {
     }
   };
 
+  const nextPage = () => {
+    if (currentPage < lastPage) {
+      dispatch(fetchCategories(currentPage + 1));
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      dispatch(fetchCategories(currentPage - 1));
+    }
+  };
+
   if (loading) {
-    return <h2>Loading...</h2>;
+    return <h2 className="text-center py-20">Loading...</h2>;
   }
 
   return (
