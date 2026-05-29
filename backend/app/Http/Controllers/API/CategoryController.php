@@ -17,7 +17,7 @@ class CategoryController extends Controller
     {
         $categories = Category::withCount('articles')
             ->latest()
-            ->paginate(10);
+            ->paginate(5);
 
         return CategoryResource::collection($categories);
     }
