@@ -138,7 +138,9 @@ const categorySlice = createSlice({
 
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = action.payload;
+        state.categories = action.payload.data;
+        state.currentPage = action.payload.meta.current_page;
+        state.lastPage =  action.payload.meta.last_page;
       })
 
       .addCase(fetchCategories.rejected, (state, action) => {
