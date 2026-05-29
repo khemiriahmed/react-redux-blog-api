@@ -12,7 +12,7 @@ export const fetchCategories = createAsyncThunk(
     try {
       const response = await api.get("/categories?page=${page}");
 
-      return response.data.data;
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data || "Error fetching categories",
