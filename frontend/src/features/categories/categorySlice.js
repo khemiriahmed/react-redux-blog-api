@@ -8,9 +8,9 @@ import api from "../../services/axios";
 */
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
-  async (_, thunkAPI) => {
+  async (page = 1, thunkAPI) => {
     try {
-      const response = await api.get("/categories");
+      const response = await api.get("/categories?page=${page}");
 
       return response.data.data;
     } catch (error) {
@@ -123,6 +123,8 @@ const categorySlice = createSlice({
     singleCategory: null,
     loading: false,
     error: null,
+    currentPage: 1,
+    lastPage: 1,
   },
 
   reducers: {},
@@ -136,7 +138,9 @@ const categorySlice = createSlice({
 
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = action.payload;
+        state.categories = action.payload.data;
+        state.currentPage = action.payload.meta.current_page;
+        state.lastPage =  action.payload.meta.last_page;
       })
 
       .addCase(fetchCategories.rejected, (state, action) => {
