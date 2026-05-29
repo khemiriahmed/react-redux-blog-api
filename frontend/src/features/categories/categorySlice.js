@@ -8,9 +8,9 @@ import api from "../../services/axios";
 */
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
-  async (_, thunkAPI) => {
+  async (page = 1, thunkAPI) => {
     try {
-      const response = await api.get("/categories");
+      const response = await api.get("/categories?page=${page}");
 
       return response.data.data;
     } catch (error) {
