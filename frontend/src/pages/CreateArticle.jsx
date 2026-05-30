@@ -50,11 +50,11 @@ function CreateArticle() {
   };
 
   const handleImageChange = (e) => {
-  setFormData({
-    ...formData,
-    image: e.target.files[0],
-  });
-};
+    setFormData({
+      ...formData,
+      image: e.target.files[0],
+    });
+  };
 
   /*
   |--------------------------------------------------------------------------
@@ -70,13 +70,11 @@ function CreateArticle() {
     data.append("excerpt", formData.excerpt);
     data.append("category_id", formData.category_id);
 
-      if (formData.image) {
-    data.append("image", formData.image);
-  }
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
 
-    const result = await dispatch(
-    createArticle(data)
-  );
+    const result = await dispatch(createArticle(data));
 
     /*
     |--------------------------------------------------------------------------
@@ -180,19 +178,18 @@ function CreateArticle() {
               )}
             </div>
 
-
             <div>
-  <label className="block text-gray-700 font-medium mb-2">
-    Article Image
-  </label>
+              <label className="block text-gray-700 font-medium mb-2">
+                Article Image
+              </label>
 
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleImageChange}
-    className="w-full border rounded-xl px-4 py-3"
-  />
-</div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full border rounded-xl px-4 py-3"
+              />
+            </div>
 
             {/* BUTTONS */}
             <div className="flex gap-4">

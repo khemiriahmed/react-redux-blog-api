@@ -52,7 +52,8 @@ function Register() {
 
     const resultAction = await dispatch(registerUser(formData)); //Envoie formulaire vers Redux.
 
-    if (registerUser.fulfilled.match(resultAction)) { //Vérifie si API réussit.
+    if (registerUser.fulfilled.match(resultAction)) {
+      //Vérifie si API réussit.
       navigate("/");
     }
   };
