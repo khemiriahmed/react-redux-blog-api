@@ -10,7 +10,7 @@ import api from "../../services/axios";
 export const fetchArticles = createAsyncThunk(
   "articles/fetchArticles",
 
-  async ({page = 1,search =""}, thunkAPI) => {
+  async ({ page = 1, search = "" }, thunkAPI) => {
     try {
       const response = await api.get(`/articles?page=${page}&search=${search}`);
       //console.log(response.data);
@@ -75,12 +75,14 @@ export const updateArticle = createAsyncThunk(
 
   async ({ id, articleData }, thunkAPI) => {
     try {
-      const response = await api.post(`/articles/${id}?_method=PUT`, articleData,
-         {
+      const response = await api.post(
+        `/articles/${id}?_method=PUT`,
+        articleData,
+        {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       return response.data.data;
@@ -122,7 +124,7 @@ export const likeArticle = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data);
     }
-  }
+  },
 );
 
 const articleSlice = createSlice({
@@ -264,15 +266,14 @@ const articleSlice = createSlice({
       })
 
       .addCase(likeArticle.fulfilled, (state, action) => {
-  const article = state.articles.find(a => a.id === action.payload.id);
+        const article = state.articles.find((a) => a.id === action.payload.id);
 
-  if (article) {
-    article.liked = action.payload.liked;
-    article.likes_count = action.payload.likes_count;
-  }
-})
+        if (article) {
+          article.liked = action.payload.liked;
+          article.likes_count = action.payload.likes_count;
+        }
+      });
   },
-  
 });
 
 export default articleSlice.reducer;

@@ -55,7 +55,7 @@ function ListeCategories() {
 
         <Link to="/create-category">
           <button className="bg-blue-600 text-white px-5 py-3 rounded-xl">
-            Add Category 
+            Add Category
           </button>
         </Link>
       </div>

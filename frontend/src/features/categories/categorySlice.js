@@ -10,7 +10,7 @@ export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async (page = 1, thunkAPI) => {
     try {
-    const response = await api.get(`/categories?page=${page}`);
+      const response = await api.get(`/categories?page=${page}`);
 
       return response.data;
     } catch (error) {
@@ -140,7 +140,7 @@ const categorySlice = createSlice({
         state.loading = false;
         state.categories = action.payload.data;
         state.currentPage = action.payload.meta.current_page;
-        state.lastPage =  action.payload.meta.last_page;
+        state.lastPage = action.payload.meta.last_page;
       })
 
       .addCase(fetchCategories.rejected, (state, action) => {
