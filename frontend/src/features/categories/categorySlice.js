@@ -10,7 +10,7 @@ export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async (page = 1, thunkAPI) => {
     try {
-      const response = await api.get("/categories?page=${page}");
+    const response = await api.get(`/categories?page=${page}`);
 
       return response.data;
     } catch (error) {
