@@ -38,17 +38,17 @@ function Sidebar() {
   return (
     <div >
       <div >
-        <h1>Blog Dashboard</h1>
+        <h1 className="text-3xl font-bold">Blog Dashboard</h1>
 
-        <p >Laravel + React</p>
+        <p className="text-gray-400 mt-2">Laravel + React</p>
       </div>
 
-      <nav>
+      <nav className="px-4 space-y-2">
         {menu.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-           
+            className={`block px-5 py-4 rounded-xl transition ${location.pathname === item.path ? "bg-blue-600" : "hover:bg-gray-800"}`}
           >
             {item.name}
           </Link>
