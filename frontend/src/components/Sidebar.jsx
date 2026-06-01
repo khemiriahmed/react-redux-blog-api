@@ -35,7 +35,27 @@ function Sidebar() {
     },
   ];
 
+  return (
+    <div >
+      <div >
+        <h1>Blog Dashboard</h1>
 
+        <p >Laravel + React</p>
+      </div>
+
+      <nav>
+        {menu.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+           
+          >
+            {item.name}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
 }
 
 export default Sidebar;
