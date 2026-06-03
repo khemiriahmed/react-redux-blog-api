@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-
 function Sidebar() {
     const location = useLocation();
     const menu = [

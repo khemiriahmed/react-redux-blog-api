@@ -3,9 +3,7 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 function AdminRoute({ children }) {
-  const { user, token } = useSelector(
-    (state) => state.auth
-  );
+  const { user, token } = useSelector((state) => state.auth);
 
   /*
   |--------------------------------------------------------------------------
