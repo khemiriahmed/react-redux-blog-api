@@ -60,9 +60,11 @@ class Comment extends Model
 
     public function scopeWithReplies($query)
     {
-        return $query->with(['replies' => function ($q) {
-            $q->approved()->with('user:id,name');
-        }]);
+        return $query->with([
+            'replies' => function ($q) {
+                $q->approved()->with('user:id,name');
+            }
+        ]);
     }
 
     /**
