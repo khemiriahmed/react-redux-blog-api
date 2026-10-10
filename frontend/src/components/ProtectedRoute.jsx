@@ -2,8 +2,10 @@ import { useSelector } from "react-redux";
 
 import { Navigate } from "react-router-dom";
 
-function AdminRoute({ children }) {
-  const { user, token } = useSelector((state) => state.auth);
+function ProtectedRoute({ children }) {
+  const { user, token } = useSelector(
+    (state) => state.auth
+  );
 
   /*
   |--------------------------------------------------------------------------
@@ -16,7 +18,7 @@ function AdminRoute({ children }) {
 
   /*
   |--------------------------------------------------------------------------
-  | NOT ADMIN
+  | USER STILL LOADING (FETCH /me)
   |--------------------------------------------------------------------------
   */
   if (!user) {
@@ -30,4 +32,4 @@ function AdminRoute({ children }) {
   return children;
 }
 
-export default AdminRoute;
+export default ProtectedRoute;

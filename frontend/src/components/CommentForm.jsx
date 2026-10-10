@@ -1,7 +1,10 @@
 import { useState } from "react";
 
+import { Link } from "react-router-dom";
+
 import {
   useDispatch,
+  useSelector,
 } from "react-redux";
 
 import { addComment } from "../features/comments/commentSlice";
@@ -11,6 +14,10 @@ function CommentForm({
   parentId = null,
 }) {
   const dispatch = useDispatch();
+
+  const token = useSelector(
+    (state) => state.auth.token
+  );
 
   const [content, setContent] =
     useState("");
@@ -39,6 +46,20 @@ function CommentForm({
 
     setContent("");
   };
+
+  if (!token) {
+    return (
+      <p className="mb-6 text-gray-500">
+        <Link
+          to="/login"
+          className="text-blue-600 hover:underline"
+        >
+          Login
+        </Link>{" "}
+        to post a comment.
+      </p>
+    );
+  }
 
   return (
     <form

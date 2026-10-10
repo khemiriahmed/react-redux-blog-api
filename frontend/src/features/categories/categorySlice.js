@@ -23,6 +23,26 @@ export const fetchCategories = createAsyncThunk(
 
 /*
 |--------------------------------------------------------------------------
+| GET ALL CATEGORIES (NO PAGINATION - FOR DROPDOWNS)
+|--------------------------------------------------------------------------
+*/
+export const fetchAllCategories = createAsyncThunk(
+  "categories/fetchAllCategories",
+  async (_, thunkAPI) => {
+    try {
+      const response = await api.get("/categories?all=1");
+
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error fetching categories",
+      );
+    }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
 | GET SINGLE CATEGORY
 |--------------------------------------------------------------------------
 */
@@ -121,6 +141,7 @@ const categorySlice = createSlice({
   initialState: {
     categories: [],
     singleCategory: null,
+    categoryOptions: [],
     loading: false,
     error: null,
     currentPage: 1,
@@ -148,12 +169,21 @@ const categorySlice = createSlice({
         state.error = action.payload;
       })
 
+      .addCase(fetchAllCategories.fulfilled, (state, action) => {
+        state.categoryOptions = action.payload;
+      })
+
       .addCase(fetchSingleCategory.fulfilled, (state, action) => {
         state.singleCategory = action.payload;
       })
 
       .addCase(createCategory.fulfilled, (state, action) => {
-        state.categories.unshift(action.payload);
+        state.categories.unshift({
+          articles_count: 0,
+          ...action.payload,
+        });
+
+        state.categoryOptions.push(action.payload);
       })
 
       .addCase(updateCategory.fulfilled, (state, action) => {
@@ -168,6 +198,10 @@ const categorySlice = createSlice({
 
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.categories = state.categories.filter(
+          (category) => category.id !== action.payload,
+        );
+
+        state.categoryOptions = state.categoryOptions.filter(
           (category) => category.id !== action.payload,
         );
       });

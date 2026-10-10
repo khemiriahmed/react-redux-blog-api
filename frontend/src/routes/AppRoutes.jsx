@@ -79,17 +79,17 @@ function AppRoutes() {
       <Route
         path="/create-category"
         element={
-          <ProtectedRoute>
+          <AdminRoute>
             <CreateCategory />
-          </ProtectedRoute>
+          </AdminRoute>
         }
       />
       <Route
         path="/edit-category/:id"
         element={
-          <ProtectedRoute>
+          <AdminRoute>
             <EditCategory />
-          </ProtectedRoute>
+          </AdminRoute>
         }
       />
 

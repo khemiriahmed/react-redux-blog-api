@@ -1,5 +1,12 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faFolderOpen,
+  faUser,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
 import { fetchComments } from "../features/comments/commentSlice";
@@ -83,8 +90,8 @@ function ArticleDetails() {
       <div className="max-w-4xl mx-auto px-4">
         {/* BACK BUTTON */}
         <Link to="/">
-          <button className="mb-6 bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-xl transition duration-300">
-            ← Back
+          <button className="mb-6 inline-flex items-center gap-2 bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-xl transition duration-300">
+            <FontAwesomeIcon icon={faArrowLeft} /> Back
           </button>
         </Link>
 
@@ -98,18 +105,19 @@ function ArticleDetails() {
           {/* META */}
           <div className="flex flex-wrap gap-4 mb-8">
             {/* CATEGORY */}
-            <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
-              📂 {singleArticle.category?.name}
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+              <FontAwesomeIcon icon={faFolderOpen} />{" "}
+              {singleArticle.category?.name}
             </div>
 
             {/* AUTHOR */}
-            <div className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
-              👤 {singleArticle.author?.name}
+            <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
+              <FontAwesomeIcon icon={faUser} /> {singleArticle.author?.name}
             </div>
 
             {/* VIEWS */}
-            <div className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium">
-              👁 {singleArticle.view_count} views
+            <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium">
+              <FontAwesomeIcon icon={faEye} /> {singleArticle.view_count} views
             </div>
           </div>
 

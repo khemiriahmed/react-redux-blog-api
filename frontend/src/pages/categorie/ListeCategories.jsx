@@ -12,6 +12,10 @@ import {
 function ListeCategories() {
   const dispatch = useDispatch();
 
+  const user = useSelector((state) => state.auth.user);
+
+  const isAdmin = user?.role === "admin";
+
   const {
     categories,
 
@@ -53,11 +57,13 @@ function ListeCategories() {
       <div className="flex justify-between mb-8">
         <h1 className="text-3xl font-bold">Categories</h1>
 
-        <Link to="/create-category">
-          <button className="bg-blue-600 text-white px-5 py-3 rounded-xl">
-            Add Category
-          </button>
-        </Link>
+        {isAdmin && (
+          <Link to="/create-category">
+            <button className="bg-blue-600 text-white px-5 py-3 rounded-xl">
+              Add Category
+            </button>
+          </Link>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -76,18 +82,22 @@ function ListeCategories() {
                 </button>
               </Link>
 
-              <Link to={`/edit-category/${category.id}`}>
-                <button className="bg-yellow-500 text-white px-4 py-2 rounded">
-                  Edit
-                </button>
-              </Link>
+              {isAdmin && (
+                <>
+                  <Link to={`/edit-category/${category.id}`}>
+                    <button className="bg-yellow-500 text-white px-4 py-2 rounded">
+                      Edit
+                    </button>
+                  </Link>
 
-              <button
-                onClick={() => handleDelete(category.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Delete
-              </button>
+                  <button
+                    onClick={() => handleDelete(category.id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}
