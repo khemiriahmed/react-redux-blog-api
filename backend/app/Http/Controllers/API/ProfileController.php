@@ -18,8 +18,8 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'name' => 'string',
-            'email' => 'email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
         ]);
 
         $user->update($request->only('name', 'email'));
@@ -30,12 +30,16 @@ class ProfileController extends Controller
     public function uploadAvatar(Request $request)
     {
         $request->validate([
-            'avatar' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $user = $request->user();
 
         if ($request->hasFile('avatar')) {
+
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
 
             $path = $request->file('avatar')
                 ->store('avatars', 'public');

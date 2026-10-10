@@ -56,11 +56,14 @@ class ArticleResource extends JsonResource
                 $this->whenLoaded('comments')
             ),
 
-            'user_liked' => auth()->check()
-                ? $this->likes()->where('user_id', auth()->id())->exists()
-                : false,
+            // 👍 Likes
+            'liked' => $this->user_liked ?? (
+                auth()->check()
+                    ? $this->likes()->where('user_id', auth()->id())->exists()
+                    : false
+            ),
 
-            'likes_count' => $this->likes()->count(),
+            'likes_count' => $this->likes_count ?? $this->likes()->count(),
         ];
     }
 }

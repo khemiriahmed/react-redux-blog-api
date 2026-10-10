@@ -6,20 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
     /**
      * GET /categories
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('articles')
-            ->latest()
-            ->paginate(5);
+        $query = Category::withCount('articles')
+            ->latest();
 
-        return CategoryResource::collection($categories);
+        if ($request->boolean('all')) {
+            return CategoryResource::collection($query->get());
+        }
+
+        return CategoryResource::collection($query->paginate(5));
     }
 
 
@@ -40,7 +42,6 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
         ]);
 
         return new CategoryResource($category);
@@ -74,7 +75,6 @@ class CategoryController extends Controller
 
         $category->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
         ]);
 
         return new CategoryResource($category);
