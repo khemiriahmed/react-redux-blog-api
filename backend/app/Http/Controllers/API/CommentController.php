@@ -24,7 +24,7 @@ class CommentController extends Controller
         $comment = Comment::create([
             'article_id' => $article->id,
 
-             'user_id' => 1,
+            'user_id' => Auth::id(),
 
             'content' => $request->content,
 
@@ -33,8 +33,7 @@ class CommentController extends Controller
             'parent_id' => $request->parent_id,
         ]);
 
-        // $comment->load('user');
-           $comment->load( 'replies');
+        $comment->load(['user:id,name,email', 'replies.user:id,name,email']);
 
         return new CommentResource($comment);
     }

@@ -19,11 +19,16 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
+        $userId = auth()->id();
+
         $query = Article::with([
-            'user',
-            'category',
-            'comments'
-        ]);
+            'user:id,name,email',
+            'category:id,name,slug',
+        ])
+            ->withCount('likes')
+            ->withExists([
+                'likes as user_liked' => fn($q) => $q->when($userId, fn($q) => $q->where('user_id', $userId)),
+            ]);
 
         if ($request->filled('search')) {
 
@@ -60,7 +65,6 @@ class ArticleController extends Controller
 
         $imagePath = null;
 
-        // Upload image
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')
                 ->store('articles', 'public');
@@ -88,23 +92,32 @@ class ArticleController extends Controller
             'published_at' => now(),
         ]);
 
-        return new ArticleResource($article);
+        return new ArticleResource(
+            $article->load(['user:id,name,email', 'category:id,name,slug'])
+        );
     }
 
     /**
      * Display the specified article
      */
-    public function show(string $slug)
+    public function show(string $id)
     {
+        $userId = auth()->id();
+
         $article = Article::with([
-            'user',
-            'category',
-            'comments.user'
+            'user:id,name,email',
+            'category:id,name,slug',
+            'comments.user',
         ])
-            //->where('slug', $slug)
+            ->withCount('likes')
+            ->withExists([
+                'likes as user_liked' => fn($q) => $q->when($userId, fn($q) => $q->where('user_id', $userId)),
+            ])
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)->orWhere('slug', $id);
+            })
             ->firstOrFail();
 
-        // increment views
         $article->increment('view_count');
 
         return new ArticleResource($article);
@@ -117,10 +130,17 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
 
+        if ($article->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
         $request->validate([
-            'title' => 'required',
-            'content' => 'required',
-            'category_id' => 'required',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'excerpt' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -128,7 +148,6 @@ class ArticleController extends Controller
 
             if ($article->image) {
                 Storage::disk('public')->delete($article->image);
-                var_dump($article->image);
             }
 
             $article->image = $request
@@ -144,9 +163,10 @@ class ArticleController extends Controller
             'image' => $article->image,
         ]);
 
-        return response()->json([
-            'data' => $article
-        ]);
+        return new ArticleResource($article->fresh([
+            'user:id,name,email',
+            'category:id,name,slug',
+        ]));
     }
 
     /**
@@ -157,10 +177,14 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
 
         // check ownership
-        if ($article->user_id !== Auth::id()) {
+        if ($article->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 403);
+        }
+
+        if ($article->image) {
+            Storage::disk('public')->delete($article->image);
         }
 
         $article->delete();
@@ -177,26 +201,29 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
 
-        $like = ArticleLike::where('article_id', $id)
-            ->where('user_id', auth()->id() ?? null)
+        $like = ArticleLike::where('article_id', $article->id)
+            ->where('user_id', Auth::id())
             ->first();
 
         if ($like) {
             $like->delete();
+
             return response()->json([
                 'liked' => false,
-                'message' => 'Unliked'
+                'likes_count' => ArticleLike::where('article_id', $article->id)->count(),
+                'message' => 'Unliked',
             ]);
         }
 
         ArticleLike::create([
-            'article_id' => $id,
-            'user_id' => auth()->id() ?? null,
+            'article_id' => $article->id,
+            'user_id' => Auth::id(),
         ]);
 
         return response()->json([
             'liked' => true,
-            'message' => 'Liked'
+            'likes_count' => ArticleLike::where('article_id', $article->id)->count(),
+            'message' => 'Liked',
         ]);
     }
 
