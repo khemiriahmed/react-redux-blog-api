@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faFolderOpen,
+  faUser,
+  faEye,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import { likeArticle } from "../features/articles/articleSlice";
 import {
   fetchArticles,
@@ -10,36 +18,41 @@ import {
 function Home() {
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+
   /*
   |--------------------------------------------------------------------------
   | REDUX STATE
   |--------------------------------------------------------------------------
   */
-  const { articles, loading, error, currentPage, lastPage } = useSelector(
+  const { articles, loading, error, lastPage } = useSelector(
     (state) => state.articles,
   );
 
+  const { user } = useSelector((state) => state.auth);
+
   /*
   |--------------------------------------------------------------------------
-  | SEARCH STATES
+  | SEARCH + PAGINATION STATE
   |--------------------------------------------------------------------------
   */
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   /*
   |--------------------------------------------------------------------------
-  | FETCH ARTICLES (ON LOAD / PAGE CHANGE ONLY)
+  | FETCH ARTICLES (ON LOAD / PAGE / SEARCH CHANGE)
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
     dispatch(
       fetchArticles({
-        page: currentPage,
+        page,
         search,
       }),
     );
-  }, [dispatch, currentPage]);
+  }, [dispatch, page, search]);
 
   /*
   |--------------------------------------------------------------------------
@@ -47,48 +60,19 @@ function Home() {
   |--------------------------------------------------------------------------
   */
   const handleSearch = () => {
+    setPage(1);
+
     setSearch(searchInput);
-
-    dispatch(
-      fetchArticles({
-        page: 1,
-        search: searchInput,
-      }),
-    );
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | PAGINATION HANDLERS
-  |--------------------------------------------------------------------------
-  */
-  const handleNextPage = () => {
-    if (currentPage < lastPage) {
-      dispatch(
-        fetchArticles({
-          page: currentPage + 1,
-          search,
-        }),
-      );
-    }
+  const handleClearSearch = () => {
+    setPage(1);
+
+    setSearchInput("");
+
+    setSearch("");
   };
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      dispatch(
-        fetchArticles({
-          page: currentPage - 1,
-          search,
-        }),
-      );
-    }
-  };
-
-  /*
-  |--------------------------------------------------------------------------
-  | DELETE ARTICLE
-  |--------------------------------------------------------------------------
-  */
   const handleDelete = (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this article?",
@@ -99,15 +83,12 @@ function Home() {
     }
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | LIKE ARTICLE
-  |--------------------------------------------------------------------------
-  */
-
   const handleLike = (id) => {
     dispatch(likeArticle(id));
   };
+
+  const canManage = (article) =>
+    user && (user.id === article.author?.id || user.role === "admin");
 
   /*
   |--------------------------------------------------------------------------
@@ -177,13 +158,22 @@ function Home() {
               >
                 Search
               </button>
+
+              {search && (
+                <button
+                  onClick={handleClearSearch}
+                  className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-xl"
+                >
+                  Clear
+                </button>
+              )}
             </div>
           </div>
 
           {/* CREATE BUTTON */}
           <Link to="/create-article">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md">
-              + Create Article
+            <button className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md">
+              <FontAwesomeIcon icon={faPlus} /> Create Article
             </button>
           </Link>
         </div>
@@ -222,16 +212,17 @@ function Home() {
 
                 {/* META */}
                 <div className="flex gap-3 mt-4 text-sm">
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                    📂 {article.category?.name}
+                  <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                    <FontAwesomeIcon icon={faFolderOpen} />{" "}
+                    {article.category?.name}
                   </span>
 
-                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                    👤 {article.author?.name}
+                  <span className="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                    <FontAwesomeIcon icon={faUser} /> {article.author?.name}
                   </span>
 
-                  <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
-                    👁 {article.view_count}
+                  <span className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                    <FontAwesomeIcon icon={faEye} /> {article.view_count}
                   </span>
                 </div>
 
@@ -244,29 +235,36 @@ function Home() {
                     Read
                   </Link>
 
-                  <Link
-                    to={`/edit-article/${article.id}`}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
-                  >
-                    Edit
-                  </Link>
+                  {canManage(article) && (
+                    <>
+                      <Link
+                        to={`/edit-article/${article.id}`}
+                        className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+                      >
+                        Edit
+                      </Link>
 
-                  <button
-                    onClick={() => handleDelete(article.id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-xl"
-                  >
-                    Delete
-                  </button>
+                      <button
+                        onClick={() => handleDelete(article.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-xl"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
                 <button
-                  onClick={() => handleLike(article.id)}
-                  className={`px-4 py-2 rounded-xl transition ${
+                  onClick={() =>
+                    user ? handleLike(article.id) : navigate("/login")
+                  }
+                  className={`mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl transition ${
                     article.liked
                       ? "bg-red-500 text-white"
                       : "bg-gray-200 text-gray-700"
                   }`}
                 >
-                  ❤️ {article.likes_count || 0}
+                  <FontAwesomeIcon icon={faHeart} />{" "}
+                  {article.likes_count || 0}
                 </button>
               </div>
             ))}
@@ -277,10 +275,10 @@ function Home() {
         <div className="flex items-center justify-center gap-3 mt-10 flex-wrap">
           {/* PREV */}
           <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
             className={`px-4 py-2 rounded-xl ${
-              currentPage === 1
+              page === 1
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-gray-800 text-white"
             }`}
@@ -290,34 +288,27 @@ function Home() {
 
           {/* NUMBERS */}
           {[...Array(lastPage)].map((_, index) => {
-            const page = index + 1;
+            const pageNumber = index + 1;
 
             return (
               <button
-                key={page}
-                onClick={() =>
-                  dispatch(
-                    fetchArticles({
-                      page,
-                      search,
-                    }),
-                  )
-                }
+                key={pageNumber}
+                onClick={() => setPage(pageNumber)}
                 className={`w-10 h-10 rounded-xl ${
-                  currentPage === page ? "bg-blue-600 text-white" : "bg-white"
+                  page === pageNumber ? "bg-blue-600 text-white" : "bg-white"
                 }`}
               >
-                {page}
+                {pageNumber}
               </button>
             );
           })}
 
           {/* NEXT */}
           <button
-            onClick={handleNextPage}
-            disabled={currentPage === lastPage}
+            onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
+            disabled={page === lastPage}
             className={`px-4 py-2 rounded-xl ${
-              currentPage === lastPage
+              page === lastPage
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-blue-600 text-white"
             }`}

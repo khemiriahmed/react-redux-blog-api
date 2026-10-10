@@ -14,40 +14,44 @@ function EditCategory() {
 
   const dispatch = useDispatch();
 
-  const navigate = useNavigate();
-
   const { singleCategory, loading } = useSelector((state) => state.categories);
-
-  const [name, setName] = useState("");
 
   /*
   |--------------------------------------------------------------------------
   | LOAD CATEGORY
   |--------------------------------------------------------------------------
   */
-
   useEffect(() => {
     dispatch(fetchCategoryById(id));
   }, [dispatch, id]);
 
-  /*
-  |--------------------------------------------------------------------------
-  | SET FORM
-  |--------------------------------------------------------------------------
-  */
+  if (loading && !singleCategory) {
+    return <h2 className="text-center py-20">Loading...</h2>;
+  }
 
-  useEffect(() => {
-    if (singleCategory) {
-      setName(singleCategory.name);
-    }
-  }, [singleCategory]);
+  if (!singleCategory) {
+    return <h2 className="text-center py-20">Category not found</h2>;
+  }
+
+  return (
+    <EditCategoryForm key={singleCategory.id} category={singleCategory} />
+  );
+}
+
+function EditCategoryForm({ category }) {
+  const { id } = useParams();
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const [name, setName] = useState(category.name || "");
 
   /*
   |--------------------------------------------------------------------------
   | SUBMIT
   |--------------------------------------------------------------------------
   */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -66,10 +70,6 @@ function EditCategory() {
     }
   };
 
-  if (loading && !singleCategory) {
-    return <h2>Loading...</h2>;
-  }
-
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-xl mx-auto">
@@ -82,24 +82,12 @@ function EditCategory() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Category name"
-              className="
-w-full
-border
-rounded-xl
-px-4
-py-3
-"
+              className="w-full border rounded-xl px-4 py-3"
             />
 
             <div className="flex gap-4">
               <button
-                className="
-bg-yellow-500
-text-white
-px-6
-py-3
-rounded-xl
-"
+                className="bg-yellow-500 text-white px-6 py-3 rounded-xl"
               >
                 Update
               </button>
@@ -107,12 +95,7 @@ rounded-xl
               <button
                 type="button"
                 onClick={() => navigate("/categories")}
-                className="
-bg-gray-300
-px-6
-py-3
-rounded-xl
-"
+                className="bg-gray-300 px-6 py-3 rounded-xl"
               >
                 Cancel
               </button>

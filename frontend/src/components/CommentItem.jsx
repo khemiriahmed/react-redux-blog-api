@@ -15,12 +15,12 @@ function CommentItem({
       {/* USER */}
       <div className="flex items-center gap-3 mb-3">
         <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
-          {comment.user?.name?.charAt(0)}
+          {(comment.author?.name || comment.user?.name)?.charAt(0)}
         </div>
 
         <div>
           <h4 className="font-semibold text-gray-800">
-            {comment.user?.name}
+            {comment.author?.name || comment.user?.name}
           </h4>
         </div>
       </div>

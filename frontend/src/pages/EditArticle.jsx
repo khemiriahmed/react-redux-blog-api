@@ -4,62 +4,77 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { updateArticle } from "../features/articles/articleSlice";
+import {
+  fetchSingleArticle,
+  updateArticle,
+} from "../features/articles/articleSlice";
+import { fetchAllCategories } from "../features/categories/categorySlice";
 
 function EditArticle() {
   const { id } = useParams();
 
-  const navigate = useNavigate();
-
   const dispatch = useDispatch();
 
-  /*
-  |--------------------------------------------------------------------------
-  | REDUX STATE
-  |--------------------------------------------------------------------------
-  */
-  const { articles } = useSelector((state) => state.articles);
+  const { singleArticle, loading, error } = useSelector(
+    (state) => state.articles,
+  );
 
   /*
   |--------------------------------------------------------------------------
-  | FIND ARTICLE
-  |--------------------------------------------------------------------------
-  */
-  const article = articles.find((article) => article.id === Number(id));
-
-  /*
-  |--------------------------------------------------------------------------
-  | FORM STATE
-  |--------------------------------------------------------------------------
-  */
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    excerpt: "",
-    category_id: "",
-    image: null,
-  });
-  const [preview, setPreview] = useState(null);
-
-  /*
-  |--------------------------------------------------------------------------
-  | LOAD ARTICLE DATA
+  | LOAD ARTICLE + CATEGORIES
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
-    if (article) {
-      setFormData({
-        title: article.title || "",
-        content: article.content || "",
-        excerpt: article.excerpt || "",
-        category_id: article.category?.id || "",
-        image: null,
-      });
-      if (article.image) {
-        setPreview(`http://127.0.0.1:8000/storage/${article.image}`);
-      }
-    }
-  }, [article]);
+    dispatch(fetchSingleArticle(id));
+    dispatch(fetchAllCategories());
+  }, [dispatch, id]);
+
+  if (loading && !singleArticle) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <h2 className="text-2xl font-semibold text-gray-700">
+          Loading article...
+        </h2>
+      </div>
+    );
+  }
+
+  if (!singleArticle) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <h2 className="text-2xl font-semibold text-red-500">
+          {error ? "Error loading article" : "Article not found"}
+        </h2>
+      </div>
+    );
+  }
+
+  return <EditArticleForm key={singleArticle.id} article={singleArticle} />;
+}
+
+function EditArticleForm({ article }) {
+  const { id } = useParams();
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const { categoryOptions } = useSelector((state) => state.categories);
+
+  /*
+  |--------------------------------------------------------------------------
+  | FORM STATE (initialized from the loaded article - no effect needed)
+  |--------------------------------------------------------------------------
+  */
+  const [formData, setFormData] = useState(() => ({
+    title: article.title || "",
+    content: article.content || "",
+    excerpt: article.excerpt || "",
+    category_id: article.category?.id || "",
+    image: null,
+  }));
+
+  const [preview, setPreview] = useState(article.image || null);
 
   /*
   |--------------------------------------------------------------------------
@@ -67,20 +82,20 @@ function EditArticle() {
   |--------------------------------------------------------------------------
   */
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
 
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       image: file,
-    });
+    }));
 
     if (file) {
       setPreview(URL.createObjectURL(file));
@@ -106,9 +121,6 @@ function EditArticle() {
       data.append("image", formData.image);
     }
 
-    for (let pair of data.entries()) {
-      console.log(pair[0], pair[1]);
-    }
     const result = await dispatch(
       updateArticle({
         id,
@@ -120,21 +132,6 @@ function EditArticle() {
       navigate("/");
     }
   };
-
-  /*
-  |--------------------------------------------------------------------------
-  | ARTICLE NOT FOUND
-  |--------------------------------------------------------------------------
-  */
-  if (!article) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <h2 className="text-2xl font-semibold text-red-500">
-          Article not found
-        </h2>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -203,17 +200,23 @@ function EditArticle() {
             {/* CATEGORY */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">
-                Category ID
+                Category
               </label>
 
-              <input
-                type="number"
+              <select
                 name="category_id"
                 value={formData.category_id}
                 onChange={handleChange}
-                placeholder="Category ID"
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              >
+                <option value="">Select a category</option>
+
+                {categoryOptions.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* IMAGE */}
@@ -240,7 +243,6 @@ function EditArticle() {
 
             {/* BUTTONS */}
             <div className="flex gap-4 pt-4">
-              {/* UPDATE */}
               <button
                 type="submit"
                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-xl shadow-md transition duration-300"
@@ -248,7 +250,6 @@ function EditArticle() {
                 Update Article
               </button>
 
-              {/* CANCEL */}
               <button
                 type="button"
                 onClick={() => navigate("/")}

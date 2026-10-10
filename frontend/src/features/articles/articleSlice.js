@@ -179,6 +179,8 @@ const articleSlice = createSlice({
 
       .addCase(createArticle.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.validationErrors = null;
       })
 
       .addCase(createArticle.fulfilled, (state, action) => {
@@ -271,6 +273,11 @@ const articleSlice = createSlice({
         if (article) {
           article.liked = action.payload.liked;
           article.likes_count = action.payload.likes_count;
+        }
+
+        if (state.singleArticle?.id === action.payload.id) {
+          state.singleArticle.liked = action.payload.liked;
+          state.singleArticle.likes_count = action.payload.likes_count;
         }
       });
   },

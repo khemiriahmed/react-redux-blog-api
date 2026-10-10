@@ -2,14 +2,20 @@ import { useEffect } from "react";
 
 import { useDispatch } from "react-redux";
 
+import { useLocation } from "react-router-dom";
+
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
 
 import { fetchUser } from "./features/auth/authSlice";
 
+const AUTH_PATHS = ["/login", "/register"];
+
 function App() {
   const dispatch = useDispatch();
+
+  const { pathname } = useLocation();
 
   /*
   |--------------------------------------------------------------------------
@@ -23,6 +29,15 @@ function App() {
       dispatch(fetchUser());
     }
   }, [dispatch]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | AUTH PAGES -> CLEAN FULLSCREEN LAYOUT (NO SIDEBAR / NAVBAR)
+  |--------------------------------------------------------------------------
+  */
+  if (AUTH_PATHS.includes(pathname)) {
+    return <AppRoutes />;
+  }
 
   return (
     <div className="flex">

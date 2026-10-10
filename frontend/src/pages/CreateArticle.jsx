@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { createArticle } from "../features/articles/articleSlice";
+import { fetchAllCategories } from "../features/categories/categorySlice";
 
 function CreateArticle() {
   const dispatch = useDispatch();
@@ -14,6 +15,8 @@ function CreateArticle() {
   const { loading, error, validationErrors } = useSelector(
     (state) => state.articles,
   );
+
+  const { categoryOptions } = useSelector((state) => state.categories);
 
   /*
   |--------------------------------------------------------------------------
@@ -30,12 +33,12 @@ function CreateArticle() {
 
   /*
   |--------------------------------------------------------------------------
-  | RESET ERRORS ON MOUNT
+  | LOAD CATEGORIES
   |--------------------------------------------------------------------------
   */
   useEffect(() => {
-    // optional clean state
-  }, []);
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
 
   /*
   |--------------------------------------------------------------------------
@@ -162,14 +165,24 @@ function CreateArticle() {
 
             {/* CATEGORY */}
             <div>
-              <input
-                type="number"
+              <label className="block text-gray-700 font-medium mb-2">
+                Category
+              </label>
+
+              <select
                 name="category_id"
-                placeholder="Category ID"
                 value={formData.category_id}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
-              />
+                className="w-full border rounded-xl px-4 py-3 bg-white"
+              >
+                <option value="">Select a category</option>
+
+                {categoryOptions.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
 
               {validationErrors?.category_id && (
                 <p className="text-red-500 text-sm">
