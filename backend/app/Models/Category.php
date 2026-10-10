@@ -47,8 +47,10 @@ class Category extends Model
      */
     public function scopeWithArticlesCount($query)
     {
-        return $query->withCount(['articles' => function ($query) {
-            $query->where('is_published', true);
-        }]);
+        return $query->withCount([
+            'articles' => function ($query) {
+                $query->where('is_published', true);
+            }
+        ]);
     }
 }

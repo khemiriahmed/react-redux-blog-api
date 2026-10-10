@@ -23,4 +23,4 @@ Blog personnel fullstack moderne avec React, Redux Toolkit et Laravel API.
 - **MySQL** pour la base de données
 - **API Resources** pour le formatage des réponses
 
-## 📁 Structure du Projet
+

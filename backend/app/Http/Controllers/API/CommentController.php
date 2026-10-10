@@ -24,7 +24,7 @@ class CommentController extends Controller
         $comment = Comment::create([
             'article_id' => $article->id,
 
-            'user_id' => Auth::id(),
+            'user_id' => 1,
 
             'content' => $request->content,
 
@@ -33,7 +33,8 @@ class CommentController extends Controller
             'parent_id' => $request->parent_id,
         ]);
 
-        $comment->load(['user:id,name,email', 'replies.user:id,name,email']);
+        // $comment->load('user');
+        $comment->load('replies');
 
         return new CommentResource($comment);
     }
@@ -47,14 +48,14 @@ class CommentController extends Controller
             'user',
             'replies.user'
         ])
-        ->where('article_id', $articleId)
-        ->whereNull('parent_id')
-        ->latest()
-        ->get();
+            ->where('article_id', $articleId)
+            ->whereNull('parent_id')
+            ->latest()
+            ->get();
 
         return CommentResource::collection($comments);
     }
-    
+
 
     /**
      * Update comment
